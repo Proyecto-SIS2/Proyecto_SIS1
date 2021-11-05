@@ -1,25 +1,25 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import { BrowserRouter, Switch, Route } from "react-router-dom";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import Login from "./Pages/Login";
+import Register from "./Pages/Register";
+import Dashboard from "./Pages/Dashboard";
+import PChange from "./Pages/PChange";
+
+export default function App() {
+	const [page, setPage] = useState("dashboard");
+	const handlePage = (page) => {
+		setPage(page);
+	};
+
+	return (
+		<BrowserRouter>
+			<Switch>
+				<Route exact path="/" component={Login} />
+				<Route exact path="/tablero" render={() => <Dashboard page={page} changePage={handlePage} />} />
+				<Route exact path="/registro" component={Register} />
+				<Route exact path="/cambiar" component={PChange} />
+			</Switch>
+		</BrowserRouter>
+	);
 }
-
-export default App;

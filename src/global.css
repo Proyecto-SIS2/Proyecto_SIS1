@@ -1,0 +1,40 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 62.5%;
+}
+
+@media screen and (min-width: 600px) {
+  .margin {
+    margin: 70px 0 0 72px;
+    padding: 20px;
+  }
+
+  .only_margin {
+    margin: 70px 0 0 72px;
+  }
+}
+
+.margin {
+  margin-top: 70px;
+}
+
+.only_margin {
+  margin-top: 70px;
+}
+
+.swal-title {
+  font-size: bold 3rem !important;
+}
+
+.swal-button-text {
+  font-size: 1.6rem !important;
+}
+
+.swal-text {
+  font-size: 1.6rem !important;
+}

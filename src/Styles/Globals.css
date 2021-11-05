@@ -1,0 +1,53 @@
+@import url("https://fonts.googleapis.com/css2?family=Mulish:wght@600;800&family=Open+Sans&display=swap");
+
+:root {
+  --font-bold: "Signika", sans-serif;
+  --font: "Roboto", sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 62.5%;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-bold) !important;
+}
+
+p,
+a,
+span,
+li {
+  font-family: var(--font) !important;
+}
+
+.only_margin {
+  margin-top: 8rem;
+  margin-left: 24rem;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px #2b3648 inset !important;
+  -webkit-text-fill-color: white !important;
+  box-shadow: 0 0 0 30px #2b3648 inset !important;
+  caret-color: white;
+  font-size: "1.6rem",
+}
+
+.swal-title {
+  color: white;
+  font: bold 1.6rem/1.6rem var(--font) !important;
+}
