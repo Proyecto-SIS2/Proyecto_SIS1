@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Button, TextField, Paper, Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Swal from "sweetalert2";
+import Select from 'react-select'
 
 import PersonIcon from "@material-ui/icons/Person";
 import MailIcon from "@material-ui/icons/Mail";
@@ -119,12 +120,25 @@ const Toast = Swal.mixin({
 	timerProgressBar: true,
 });
 
-export default function Register() {
-	const [nombre, setNombre] = useState("");
-	const [apellido, setApellido] = useState("");
-	const [contra, setContra] = useState("");
-	const [correo, setCorreo] = useState("");
-	const [usuario, setUsuario] = useState("");
+const cond_pago_options = [
+	{ value: 'Pago al contado', label: 'Pago al contado' },
+	{ value: 'Pago anticipado', label: 'Pago anticipado' },
+	{ value: 'Pago aplazado', label: 'Pago aplazado' }
+  ]
+
+const metodo_pago_options = [
+	{ value: 'Pago en efectivo', label: 'Pago en efectivo' },
+	{ value: 'Cheque', label: 'Cheque' },
+	{ value: 'Transferencia bancaria', label: 'Transferencia bancaria' }
+  ]
+
+export default function Factura() {
+	const [rfc_exp, setRFC_Exp] = useState("");
+	const [rfc_rec, setRFC_Rec] = useState("");
+	const [regimen, setRegimen] = useState("");
+	const [impuestos, setImpuestos] = useState("");
+	const [cond_pago, setCond_pago] = useState("");
+	const [metodo_pago, setMetodo_pago] = useState("");
 
 	const [verifyAvailable, setVerifyAvailable] = useState(false);
 	const [blockSendButton, setBlockSendButton] = useState(true);
@@ -132,29 +146,29 @@ export default function Register() {
 	const [entryState, setEntryState] = useState(false);
 
 	useEffect(() => {
-		if(nombre && apellido && contra && correo && usuario) {
+		if(rfc_exp && rfc_rec && regimen && impuestos){
 			setBlockSendButton(false);
-			setVerifyAvailable(true);
 		}
-	}, [nombre, apellido, contra, correo, usuario]);
+	}, [rfc_exp, rfc_rec, regimen, impuestos, cond_pago, metodo_pago]);
 
 	const manejarEnvio = (e) => {
+		
 		setBlockSendButton(true);
-		if (verifyAvailable) {
 			const params = {
-				nombre: nombre,
-				apellido: apellido,
-				contra: contra,
-				correo: correo,
-				usuario: usuario,
+				rfc_exp: rfc_exp,
+				rfc_rec: rfc_rec,
+				regimen: regimen,
+				impuestos: impuestos,
+				cond_pago: cond_pago,
+				metodo_pago: metodo_pago,
 			};
-
-			Service.postData("user/register", params).then((res) => {
+			console.log(params);
+			Service.postData("facturas/register_factura", params).then((res) => {
 				if (res.status === "correct") {
 					setEntryState(true);
 					Toast.fire({
 						icon: "success",
-						title: "Registro exitoso",
+						title: "Registro de factura exitoso",
 					});
 				} else {
 					setEntryState(false);
@@ -164,10 +178,6 @@ export default function Register() {
 					});
 				}
 			});
-		} else {
-			setBlockSendButton(false);
-			return;
-		}
 	};
 
 	const classes = useStyles();
@@ -182,7 +192,7 @@ export default function Register() {
 				<div className={classes.paper}>
 						<div className={classes.fieldContainer}>
 							<div className={classes.textFieldContainer}>
-								<label htmlFor="nombre">
+								<label htmlFor="rfc_exp">
 									<PersonIcon className={classes.fieldIcon} />
 								</label>
 								<TextField
@@ -191,106 +201,148 @@ export default function Register() {
 									margin="normal"
 									required
 									fullWidth
-									name="Nombre"
-									label="Nombre"
-									id="nombre"
-									autoComplete="nombre"
+									name="RFC Expedido"
+									label="RFC Expedido"
+									id="rfc_exp"
+									autoComplete="RFC Expedido"
 									autoFocus
 									InputProps={{
 										className: classes.inputField,
 									}}
-									onChange={(e) => setNombre(e.target.value)}
-									value={nombre}
+									onChange={(e) => setRFC_Exp(e.target.value)}
+									value={rfc_exp}
 								/>
 							</div>
 						</div>
-						<div className={classes.textFieldContainer}>
-							<label htmlFor="apellido">
-								<PersonIcon className={classes.fieldIcon} />
-							</label>
-							<TextField
-								className={classes.field}
-								variant="outlined"
-								margin="normal"
-								required
-								fullWidth
-								name="Apellido"
-								label="Apellido"
-								id="apellido"
-								autoComplete="apellido"
-								InputProps={{
-									className: classes.inputField,
-								}}
-								onChange={(e) => setApellido(e.target.value)}
-								value={apellido}
-							/>
-						</div>
-						<div className={classes.textFieldContainer}>
-							<label htmlFor="usuario">
-								<AccountCircleIcon className={classes.fieldIcon} />
-							</label>
-							<TextField
-								className={classes.field}
-								variant="outlined"
-								margin="normal"
-								required
-								fullWidth
-								name="Usuario"
-								label="Usuario"
-								id="usuario"
-								autoComplete="usuario"
-								InputProps={{
-									className: classes.inputField,
-								}}
-								onChange={(e) => setUsuario(e.target.value)}
-								value={usuario}
-							/>
-						</div>
 						<div className={classes.fieldContainer}>
 							<div className={classes.textFieldContainer}>
-								<label htmlFor="correo">
-									<MailIcon className={classes.fieldIcon} />
+								<label htmlFor="rfc_rec">
+									<PersonIcon className={classes.fieldIcon} />
 								</label>
 								<TextField
 									className={classes.field}
 									variant="outlined"
-									required
 									margin="normal"
+									required
 									fullWidth
-									name="Correo"
-									label="Correo"
-									type="email"
-									id="correo"
-									autoComplete="email"
+									name="RFC Receptor"
+									label="RFC Receptor"
+									id="rfc_rec"
+									autoComplete="RFC Receptor"
+									autoFocus
 									InputProps={{
 										className: classes.inputField,
 									}}
-									onChange={(e) => setCorreo(e.target.value)}
-									value={correo}
+									onChange={(e) => setRFC_Rec(e.target.value)}
+									value={rfc_rec}
 								/>
 							</div>
 						</div>
-						<div className={classes.textFieldContainer}>
-							<label htmlFor="contra">
-								<LockIcon className={classes.fieldIcon} />
-							</label>
-							<TextField
-								className={classes.field}
-								variant="outlined"
-								required
-								margin="normal"
-								fullWidth
-								name="Contraseña"
-								label="Contraseña"
-								type="password"
-								id="contra"
-								autoComplete="current-password"
-								InputProps={{
-									className: classes.inputField,
-								}}
-								onChange={(e) => setContra(e.target.value)}
-								value={contra}
-							/>
+						<div className={classes.fieldContainer}>
+							<div className={classes.textFieldContainer}>
+								<label htmlFor="regimen">
+									<PersonIcon className={classes.fieldIcon} />
+								</label>
+								<TextField
+									className={classes.field}
+									variant="outlined"
+									margin="normal"
+									required
+									fullWidth
+									name="Régimen"
+									label="Régimen"
+									id="regimen"
+									autoComplete="Régimen"
+									autoFocus
+									InputProps={{
+										className: classes.inputField,
+									}}
+									onChange={(e) => setRegimen(e.target.value)}
+									value={regimen}
+								/>
+							</div>
+						</div>
+						<div className={classes.fieldContainer}>
+							<div className={classes.textFieldContainer}>
+								<label htmlFor="impuestos">
+									<PersonIcon className={classes.fieldIcon} />
+								</label>
+								<TextField
+									className={classes.field}
+									variant="outlined"
+									margin="normal"
+									required
+									fullWidth
+									name="Impuestos"
+									label="Impuestos"
+									id="impuestos"
+									autoComplete="Impuestos"
+									autoFocus
+									InputProps={{
+										className: classes.inputField,
+									}}
+									onChange={(e) => setImpuestos(e.target.value)}
+									value={impuestos}
+								/>
+							</div>
+						</div>
+						<div className={classes.fieldContainer}>
+							<div className={classes.textFieldContainer}>
+								<label htmlFor="cond_pago">
+									<PersonIcon className={classes.fieldIcon} />
+								</label>
+								{/* <TextField
+									className={classes.field}
+									variant="outlined"
+									margin="normal"
+									required
+									fullWidth
+									name="Condición de pago"
+									label="Condición de pago"
+									id="cond_pago"
+									autoComplete="Condición de pago"
+									autoFocus
+									InputProps={{
+										className: classes.inputField,
+									}}
+									onChange={(e) => setCond_pago(e.target.value)}
+									value={cond_pago}
+								/> */}
+								<Select 
+									options={cond_pago_options} 
+									placeholder="Condición de pago" 
+									onChange={(e) => setCond_pago(e.value)}						
+									/>
+							</div>
+						</div>
+						<div className={classes.fieldContainer}>
+							<div className={classes.textFieldContainer}>
+								<label htmlFor="metodo_pago">
+									<PersonIcon className={classes.fieldIcon} />
+								</label>
+								{/* <TextField
+									className={classes.field}
+									variant="outlined"
+									margin="normal"
+									required
+									fullWidth
+									name="Método de pago"
+									label="Método de pago"
+									id="metodo_pago"
+									autoComplete="Método de pago"
+									autoFocus
+									InputProps={{
+										className: classes.inputField,
+									}}
+									onChange={(e) => setMetodo_pago(e.target.value)}
+									value={metodo_pago}
+								/> */}
+								<Select 
+									options={metodo_pago_options} 
+									placeholder="Método de pago" 
+									onChange={(e) => setMetodo_pago(e.value)}	
+								/>
+							</div>
 						</div>
 						<Button
 							type="submit"

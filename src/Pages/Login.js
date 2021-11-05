@@ -126,20 +126,26 @@ export default function Login() {
 				icon: "error",
 				title: "Ingresa un usuario válido",
 			});
+		} else if (values.contra === "") {
+			Toast.fire({
+				icon: "error",
+				title: "Ingresa una contraseña válida",
+			});
 		}else {
 			Service.postData("user/login", values).then((data) => {
-				setLoginState(true);
-				updateLoginStatus(data);
+				if(data.status){
+					updateLoginStatus(data);
+				}
 			});
 		}
 	};
 
 	const updateLoginStatus = (data) => {
-		console.log(data);
 		let stateMsg;
 
 		if (data.status === "correct") {
-			stateMsg = "correct";
+			setLoginState(true);
+			localStorage.setItem("login", data.status === "correct");
 			localStorage.setItem("id", data.id);
 		} else if (data.status === "incorrect") {
 			stateMsg = "Contraseña inválida";
@@ -157,9 +163,9 @@ export default function Login() {
 			});
 		}
 		
-		localStorage.setItem("login", data.status === "correct");
 		
-	}; 
+		
+	};
 
 	return (
 		<Grid container className={classes.root}>
@@ -220,11 +226,6 @@ export default function Login() {
 						Iniciar Sesión
 					</Button>
 					<Grid container alignItems="center" direction="column">
-						<Grid item xs={12}>
-							<Link variant="body2" to="/cambiar" className={classes.textLink}>
-								¿Olvidaste tu contraseña?
-							</Link>
-						</Grid>
 						<Grid item xs={12}>
 							<Link variant="body2" to="/registro" className={classes.textLink}>
 								¡Regístrate!

@@ -8,12 +8,11 @@ import List from "@material-ui/core/List";
 import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
 import ListItem from "@material-ui/core/ListItem";
-import DashboardIcon from "@material-ui/icons/Dashboard";
-import PeopleAltIcon from "@material-ui/icons/PeopleAlt";
-import EqualizerIcon from "@material-ui/icons/Equalizer";
-import LoyaltyIcon from "@material-ui/icons/Loyalty";
+import PostAddIcon from '@material-ui/icons/PostAdd';
+import TimelineIcon from '@material-ui/icons/Timeline';
 import SettingsIcon from "@material-ui/icons/Settings";
 import Service from "../Service";
+import logo from '../Images/logo.png'
 
 const drawerWidth = 240;
 
@@ -54,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
 		borderRadius: "1rem",
 	},
 	toolbarItemText: {
-		color: theme.palette.text.light,
+		color: theme.palette.text.primary,
 		fontWeight: 600,
 		fontSize: "1.6rem",
 	},
@@ -102,13 +101,13 @@ const useStyles = makeStyles((theme) => ({
 export default function Header({ changePage }) {
 	const [boolean, setBoolean] = React.useState(false);
   
-	const [metas, setMetas] = React.useState([]);
+	const [usuario, setUsuario] = React.useState([]);
 	const idu=localStorage.getItem("id");
   
-	const getMetas = () => {
+	const getUsuario = () => {
 	  if (!boolean) {
-		Service.postData("user/get_userm", {id:idu}).then((res) =>{
-			setMetas(res);
+		Service.postData("user/get_user", {id:idu}).then((res) =>{
+			setUsuario(res);
 		})
 		setBoolean(true);
 	  }
@@ -116,48 +115,26 @@ export default function Header({ changePage }) {
 
 	const classes = useStyles();
 
-	getMetas();
+	getUsuario();
 	return (
 		<div className={classes.root}>
 			<AppBar position="fixed" className={classes.appBar}>
 				<Toolbar className={classes.toolbarAppBar}>
-				{metas &&
-					metas.map((meta) => {
-						if(meta.tipo_usuario==="0"){
-							return (
-								<List className={classes.toolbarList}>
-									<ListItem className={classes.toolbarItem}>
-										<Typography className={classes.toolbarItemText} variant="h5">
-											Total de ventas por cumplir
-										</Typography>
-										<Typography className={classes.toolbarItemText} variant="body2">
-											{meta.metas_mes}
-										</Typography>
-									</ListItem>
-									<ListItem className={classes.toolbarItem}>
-										<Typography className={classes.toolbarItemText} variant="h5">
-											Total de dinero por facturar
-										</Typography>
-										<Typography className={classes.toolbarItemText} variant="body2">
-											{meta.metas_dinero}
-										</Typography>
-									</ListItem>
-								</List>
-							);
-						}else{
-							return (
-								<List className={classes.toolbarList}>
-									<ListItem className={classes.toolbarItem}>
-										<Typography className={classes.toolbarItemText} variant="h5">
-											Bienvenido
-										</Typography>
-										<Typography className={classes.toolbarItemText} variant="body2">
-											{meta.nombre_completo}
-										</Typography>
-									</ListItem>
-								</List>
-							);
-						}
+				{usuario &&
+					usuario.map((u) => {
+						return (
+							<List className={classes.toolbarList}>
+								<ListItem className={classes.toolbarItem}>
+									<Typography className={classes.toolbarItemText} variant="h5">
+										Bienvenido
+									</Typography>
+									<Typography className={classes.toolbarItemText} variant="body2">
+										{u.nombre + " " + u.apellido}
+									</Typography>
+									
+								</ListItem>
+							</List>
+						);
 					})}
 				</Toolbar>
 			</AppBar>
@@ -172,64 +149,33 @@ export default function Header({ changePage }) {
 				<div className={classes.toolbar}>
 					<img
 						className={classes.toolbarImg}
-						src="https://firebasestorage.googleapis.com/v0/b/erp-cni.appspot.com/o/icons%2Flogo-white.png?alt=media&token=6a4a04ad-7422-4621-86f8-0ec3b9f3aac8"
-						alt="Logo CNI"
+						src={logo}
+						alt="Logo"
 					/>
 				</div>
 				<Divider className={classes.dividerList} />
 				<List className={classes.drawerList}>
 					<ListItem className={classes.drawerItem}>
-						<Link className={classes.drawerLink} onClick={() => changePage("dashboard")}>
-							<DashboardIcon className={classes.drawerIcon} />
+						<Link className={classes.drawerLink} onClick={() => changePage("factura")}>
+							<PostAddIcon className={classes.drawerIcon} />
 							<Typography className={classes.drawerLinkText} variant="h5">
-								Tablero
+								Generar Factura
 							</Typography>
 						</Link>
 					</ListItem>
 					<ListItem className={classes.drawerItem}>
-						<Link className={classes.drawerLink} onClick={() => changePage("leads")}>
-							<PeopleAltIcon className={classes.drawerIcon} />
+						<Link className={classes.drawerLink} onClick={() => changePage("historial")}>
+							<TimelineIcon className={classes.drawerIcon} />
 							<Typography className={classes.drawerLinkText} variant="body2">
-								Leads
+								Historial de Facturas
 							</Typography>
 						</Link>
 					</ListItem>
-					<ListItem className={classes.drawerItem}>
-						<Link className={classes.drawerLink} onClick={() => changePage("kpis")}>
-							<EqualizerIcon className={classes.drawerIcon} />
-							<Typography className={classes.drawerLinkText} variant="body2">
-								Estadísticas
-							</Typography>
-						</Link>
-					</ListItem>
-					<ListItem className={classes.drawerItem}>
-						<Link className={classes.drawerLink} onClick={() => changePage("products")}>
-							<LoyaltyIcon className={classes.drawerIcon} />
-							<Typography className={classes.drawerLinkText} variant="body2">
-								Productos
-							</Typography>
-						</Link>
-					</ListItem>
-					{metas &&
-						metas.map((meta) => {
-							if(meta.tipo_usuario==="1"){
-								return (
-								<ListItem className={classes.drawerItem}>
-									<Link className={classes.drawerLink} onClick={() => changePage("usuario")}>
-										<PeopleAltIcon className={classes.drawerIcon} />
-										<Typography className={classes.drawerLinkText} variant="body2">
-											Usuarios
-										</Typography>
-									</Link>
-								</ListItem>
-								);
-							}
-					})}
 				</List>
 				<Divider className={classes.dividerList} />
 				<List className={classes.drawerList}>
 					<ListItem className={classes.drawerItem}>
-						<Link className={classes.drawerLink} onClick={() => changePage("settings")}>
+						<Link className={classes.drawerLink} onClick={() => changePage("ajustes")}>
 							<SettingsIcon className={classes.drawerIcon} />
 							<Typography className={classes.drawerLinkText} variant="body2">
 								Ajustes
