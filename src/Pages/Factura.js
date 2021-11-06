@@ -6,9 +6,6 @@ import Swal from "sweetalert2";
 import Select from 'react-select'
 
 import PersonIcon from "@material-ui/icons/Person";
-import MailIcon from "@material-ui/icons/Mail";
-import LockIcon from "@material-ui/icons/Lock";
-import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import { Redirect } from "react-router-dom";
 import Service from "../Service";
 import logo from "../Images/logo.png"
@@ -140,7 +137,7 @@ export default function Factura() {
 	const [cond_pago, setCond_pago] = useState("");
 	const [metodo_pago, setMetodo_pago] = useState("");
 
-	const [verifyAvailable, setVerifyAvailable] = useState(false);
+	// const [verifyAvailable, setVerifyAvailable] = useState(false);
 	const [blockSendButton, setBlockSendButton] = useState(true);
 
 	const [entryState, setEntryState] = useState(false);

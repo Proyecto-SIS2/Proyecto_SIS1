@@ -236,8 +236,6 @@ function useSearchInvoices(invoices) {
 
 export default function TableFacturas() {
   const classes = useStyles();
-
-  const [checked, setChecked] = React.useState(true);
   const [petition, setPetition] = React.useState(false);
 
   const [invoices, setInvoices] = React.useState([]);
@@ -255,9 +253,9 @@ export default function TableFacturas() {
 	}, [petition]);
 
 
-  const handleChange = (event) => {
+/*   const handleChange = (event) => {
     setChecked(event.target.checked);
-  };
+  }; */
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
@@ -331,7 +329,7 @@ export default function TableFacturas() {
                 <Checkbox
                   size="medium"
                   className={classes.check}
-                  onChange={handleChange}
+                  // onChange={handleChange}
                   style={{
                     transform: "scale(1.3)",
                   }}
@@ -378,7 +376,7 @@ export default function TableFacturas() {
                 <StyledTableRow key={row.id_factura}>
                   <StyledTableCell align="center" component="th" scope="row">
                     <Checkbox
-                      onChange={handleChange}
+                      // onChange={handleChange}
                       className={classes.checkTable}
                       style={{
                         transform: "scale(1.3)",
