@@ -23,6 +23,7 @@ import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import SaveAltIcon from '@material-ui/icons/SaveAlt';
 import SearchIcon from "@material-ui/icons/Search";
 import Service from "../Service";
+import FacturaGenerada from "./FacturaGenerada";
 
 const StyledTableCell = withStyles((theme) => ({
   root: {
@@ -345,7 +346,7 @@ export default function TableFacturas() {
                     <Link
                       to={`/factura-generada/`}
                       className={classes.linkAnchor}   
-                      onClick={() => { assignID(row.id_factura) }}                
+                      onClick={() => { assignID(row.id_factura) }}     
                     >                     
                       {row.id_factura}
                     </Link>

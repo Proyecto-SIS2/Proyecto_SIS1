@@ -1,155 +1,225 @@
-import React, { useState, useEffect } from "react";
-import { Button, TextField, Paper, Grid } from "@material-ui/core";
+import React, {useState, useEffect, useMemo, componentDidMount} from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import jsPDF from 'jspdf';
+import pdfMake from 'pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
+import { Link } from "react-router-dom";
+import htmlToPdfmake from 'html-to-pdfmake';
 import { makeStyles } from "@material-ui/core/styles";
-import { Page, Text, View, Document, StyleSheet } from '@react-pdf/renderer';
-import { PDFViewer } from '@react-pdf/renderer';
-import { PDFDownloadLink} from '@react-pdf/renderer';
-// Create styles
+import { Paper, List, Typography, ListItem, Button } from "@material-ui/core";
+import KeyboardReturnIcon from "@material-ui/icons/KeyboardReturn";
+import Service from "../Service";
+import ReactLoading from "react-loading";
+import '../App.css';
 
 const useStyles = makeStyles((theme) => ({
-	root: {
-		maxWidth: "1200px",
+	card: {
+		backgroundColor: theme.palette.background.dark,
 		margin: "0 auto",
-		[[theme.breakpoints.up("sm")]]: {
-			alignItems: "center",
-			height: "100vh",
-		},
-	},
-	paper: {
-		display: "flex",
-		flexDirection: "column",
-		alignItems: "center",
-		backgroundColor: theme.palette.background.default,
-		padding: 20,
-	},
-	logoImg: {
-		width: "50%",
-		display: "block",
-		margin: "0 auto",
-		padding: "20px 0",
-		[[theme.breakpoints.up("sm")]]: {
-			width: "100%",
-			padding: "20px",
-		},
-	},
-	form: {
+		maxWidth: "700px",
 		width: "100%",
 	},
-	textFieldContainer: {
+	usuariosBtns: {
 		display: "flex",
-		alignItems: "center",
-
-		"& > label": {
-			margin: "10px 10px 0 0",
-		},
+		justifyContent: "space-evenly",
+		padding: "0 20px 20px 20px ",
 	},
-	loginContainer: {
-		backgroundColor: theme.palette.background.default,
-		boxShadow: "none",
-	},
-	field: {
-		color: theme.palette.text.light,
-		fontSize: "1.6rem",
-		"& label": {
-			color: theme.palette.text.light,
-			fontSize: "1.6rem",
-			opacity: 0.8,
-		},
-		"& fieldset": {
-			borderColor: theme.palette.primary.main,
-		},
-		"& fieldset legend": {
-			fontSize: "1.15rem",
-		},
-		"&:hover fieldset": {
-			borderWidth: `2px`,
-		},
-		"&:hover fieldset:not(.MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline)": {
-			borderColor: `${theme.palette.primary.main} !important`,
-		},
-	},
-	fieldIcon: {
-		color: theme.palette.text.light,
-		fontSize: "4rem",
-	},
-	inputField: {
-		color: theme.palette.text.light,
-		fontSize: "1.6rem",
-	},
-	submit: {
-		margin: theme.spacing(2, 0, 2),
-		textTransform: "capitalize",
-		fontWeight: "600",
-		color: theme.palette.text.light,
+	cardName: {
+		color: theme.palette.secondary.main,
 		fontSize: "2rem",
+		fontWeight: "bold",
+		textAlign: "center",
 	},
-	textLink: {
-		color: theme.palette.primary.main,
-		cursor: "pointer",
+	cardList: {
+		width: "100%",
+		padding: 20,
+	},
+	cardItem: {
+		color: theme.palette.text.light,
+		fontSize: "1.8rem",
+		display: "flex",
+		justifyContent: "center",
+	},
+	cardIcons: {
+		fontSize: "2.5rem",
+		marginInlineEnd: "1rem",
+	},
+	addBtn: {
 		fontSize: "1.6rem",
+		textTransform: "capitalize",
+		backgroundColor: theme.palette.background.default,
+		color: theme.palette.text.light,
+		transition: ".5s",
+		"&:hover": {
+			backgroundColor: theme.palette.background.default,
+			color: theme.palette.secondary.main,
+			transition: ".5s",
+		},
+	},
+	mailLink: {
+		color: theme.palette.text.light,
+		textDecoration: "none",
+	},
+	leadsBtns: {
+		display: "flex",
+		justifyContent: "space-evenly",
+		padding: "0 20px 20px 20px ",
+	},
+	leadsLink: {
 		textDecoration: "none",
 		"&:hover": {
-			textDecoration: "underline",
+			textDecoration: "none",
 		},
 	},
-	alertText: {
-		color: "red",
-		fontSize: "1.6rem",
-		position: "relative",
-		marginInlineStart: "50px",
-		display: "none",
-	},
-	page: { 
-		backgroundColor: 'tomato',
-		maxWidth: '1000%', 
-	},
-  	section: { color: 'white', textAlign: 'center', margin: 30 }
 }));
 
-// Create Document Component
-export default function FacturaGenerada() {
-	const classes = useStyles();
-	const [factura, setFactura] = useState(1);
-	const [cliente, setCliente] = useState("Efrén Ruíz Rubio");
-	const [productos, setProductos] = useState("Procesador Ryzen 5 3600");
-	const [total, setTotal] = useState(3500);
-	const [subtotal, setSubtotal] = useState(4000);		
-	const MyDocument = () => (
-		<Document>
-		<Page size="A4" style={classes.page}>
-			<View style={classes.section}>
-			<Text>{cliente}</Text>
-			</View>
-			<View style={classes.section}>
-			<Text>{productos}</Text>
-			</View>
-			<View style={classes.section}>
-			<Text>{total}</Text>
-			</View>
-			<View style={classes.section}>
-			<Text>{subtotal}</Text>
-			</View>
-			<View style={classes.section}>
-			<Text>{factura}</Text>
-			</View>
-		</Page>
-		</Document>
-	);
-	return(
-		<PDFViewer>
-			<MyDocument />
-		</PDFViewer>
-		/* <PDFDownloadLink document={<MyDocument />} fileName={"FileName"}>
-			<Button
-				type="submit"
-				variant="contained"
-				color="primary"
-				className={classes.submit}
-				//disabled={blockSendButton}
-				//onClick={() => {manejarEnvio()}}
-			>
-			Descargar factura
-			</Button>
-			</PDFDownloadLink>*/  
-	);
+
+export default function FacturaGenerada(){
+    const classes = useStyles();
+	const [booleana, setBooleana] = useState(false);
+	const [invoice, setInvoice] = useState([]);
+	const [datos, setDatos] = useState([]);
+	const id = localStorage.getItem("id_factura");
+  
+	useEffect (()=> {
+		Service.postData("facturas/get_factura", {id: id}).then((res) =>{
+			setInvoice(res);
+			setBooleana(true);
+		})
+	}, []);
+
+    function printDocument(){ 
+		console.log(invoice[0].id_factura);
+		const doc = new jsPDF();
+		const pdfTable = document.getElementById('divToPrint');
+		var html = htmlToPdfmake(pdfTable.innerHTML);
+	
+		const documentDefinition = { content: html };
+		pdfMake.vfs = pdfFonts.pdfMake.vfs;
+		pdfMake.createPdf(documentDefinition).open();  
+    }
+
+	if(booleana){
+    return (
+    		<><div className="App container mt-5">
+						<div id="divToPrint" className="m-3">
+							<div class="row d-flex justify-content-center">
+								<div class="col-md-8">
+									<div class="card">
+										<div class="d-flex flex-row p-2">
+											<div class="d-flex flex-column"> <span class="font-weight-bold">Factura no°</span>{invoice[0].id_factura}</div>
+
+										</div>
+
+										<hr />
+										<div class="table-responsive p-2">
+											<table class="table table-borderless">
+												<tbody>
+													<tr class="add">
+														<td>Expedido</td>
+														<td>Remitente</td>
+													</tr>
+													<tr class="content">
+														<td class="font-weight-bold">Google <br />{invoice[0].id_factura}<br />Australia</td>
+														<td class="font-weight-bold">Facebook <br /> {invoice[0].id_factura} <br /> USA</td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+										<hr />
+										<div class="products p-2">
+											<table class="table table-borderless">
+												<tbody>
+													<tr class="add">
+														<td>Description</td>
+														<td>Days</td>
+														<td>Price</td>
+														<td class="text-center">Total</td>
+													</tr>
+													<tr class="content">
+														<td>Website Redesign</td>
+														<td>15</td>
+														<td>$1,500</td>
+														<td class="text-center">$22,500</td>
+													</tr>
+													<tr class="content">
+														<td>Logo & Identity</td>
+														<td>10</td>
+														<td>$1,500</td>
+														<td class="text-center">$15,000</td>
+													</tr>
+													<tr class="content">
+														<td>Marketing Collateral</td>
+														<td>3</td>
+														<td>$1,500</td>
+														<td class="text-center">$4,500</td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+										<hr />
+										<div class="products p-2">
+											<table class="table table-borderless">
+												<tbody>
+													<tr class="add">
+														<td></td>
+														<td>Subtotal</td>
+														<td>GST(10%)</td>
+														<td class="text-center">Total</td>
+													</tr>
+													<tr class="content">
+														<td></td>
+														<td>$40,000</td>
+														<td>2,500</td>
+														<td class="text-center">$42,500</td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+										<hr />
+										<div class="address p-2">
+											<table class="table table-borderless">
+												<tbody>
+													<tr class="add">
+														<td>Bank Details</td>
+													</tr>
+													<tr class="content">
+														<td> Bank Name: ADS BANK <br /> Swift Code: 00220022 <br /> Account Holder: Jassa Pepper <br /> Account Number: 6953PO789 <br /> </td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div><div className={classes.usuariosBtns}>
+							<Link to="/tablero" className={classes.leadsLink}>
+								<Button
+									type="submit"
+									variant="contained"
+									className={classes.addBtn}
+									startIcon={<KeyboardReturnIcon />}
+								>
+									Regresar a Facturas
+								</Button>
+							</Link>
+
+							<Button
+								type="submit"
+								variant="contained"
+								className={classes.addBtn}
+								onClick={printDocument}
+							>
+								Exportar a PDF
+							</Button>
+						</div></>
+ 	)
+	}
+	else{
+		return(
+			
+			<ReactLoading type="spin" color ="#ccc" />
+		);
+	}
 }

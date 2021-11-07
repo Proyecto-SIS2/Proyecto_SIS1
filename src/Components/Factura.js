@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import { Button, TextField, Paper, Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Swal from "sweetalert2";
@@ -9,6 +8,11 @@ import PersonIcon from "@material-ui/icons/Person";
 import { Redirect } from "react-router-dom";
 import Service from "../Service";
 import logo from "../Images/logo.png"
+import PaymentsIcon from '@mui/icons-material/Payments';
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import MoneyOffIcon from '@material-ui/icons/MoneyOff';
+import BookIcon from '@material-ui/icons/Book';
+import ContactMailIcon from '@material-ui/icons/ContactMail';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -48,6 +52,7 @@ const useStyles = makeStyles((theme) => ({
 		},
 	},
 	loginContainer: {
+
 		backgroundColor: theme.palette.background.default,
 		boxShadow: "none",
 	},
@@ -71,6 +76,28 @@ const useStyles = makeStyles((theme) => ({
 		"&:hover fieldset:not(.MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline)": {
 			borderColor: `${theme.palette.primary.main} !important`,
 		},
+	},
+	fieldSelect: {
+		color: theme.palette.text.light,
+		fontSize: "1.6rem",
+		"& label": {
+			color: theme.palette.text.light,
+			fontSize: "1.6rem",
+			opacity: 0.8,
+		},
+		"& fieldset": {
+			borderColor: theme.palette.primary.main,
+		},
+		"& fieldset legend": {
+			fontSize: "1.15rem",
+		},
+		"&:hover fieldset": {
+			borderWidth: `2px`,
+		},
+		"&:hover fieldset:not(.MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline)": {
+			borderColor: `${theme.palette.primary.main} !important`,
+		},
+		margin: "10px 10px 0 0"
 	},
 	fieldIcon: {
 		color: theme.palette.text.light,
@@ -136,7 +163,9 @@ export default function Factura({changePage}) {
 	const [impuestos, setImpuestos] = useState("");
 	const [cond_pago, setCond_pago] = useState("");
 	const [metodo_pago, setMetodo_pago] = useState("");
-	const [id_factura, setId_factura] = useState("");
+	const [descripcion, setDescripcion] = useState("");
+	const [cantidad, setCantidad] = useState("");
+	const [valor, setValor] = useState("");
 
 	const idu=localStorage.getItem("id");
 
@@ -159,7 +188,10 @@ export default function Factura({changePage}) {
 				impuestos: impuestos,
 				cond_pago: cond_pago,
 				metodo_pago: metodo_pago,
-				id: idu
+				id: idu,
+				descripcion: descripcion,
+				cantidad: cantidad,
+				valor: valor
 			};
 		
 			Service.postData("facturas/register_factura", params).then((res) => {
@@ -189,7 +221,7 @@ export default function Factura({changePage}) {
 						<div className={classes.fieldContainer}>
 							<div className={classes.textFieldContainer}>
 								<label htmlFor="rfc_exp">
-									<PersonIcon className={classes.fieldIcon} />
+									<ContactMailIcon className={classes.fieldIcon} />
 								</label>
 								<TextField
 									className={classes.field}
@@ -212,7 +244,7 @@ export default function Factura({changePage}) {
 						<div className={classes.fieldContainer}>
 							<div className={classes.textFieldContainer}>
 								<label htmlFor="rfc_rec">
-									<PersonIcon className={classes.fieldIcon} />
+									<ContactMailIcon className={classes.fieldIcon} />
 								</label>
 								<TextField
 									className={classes.field}
@@ -235,7 +267,7 @@ export default function Factura({changePage}) {
 						<div className={classes.fieldContainer}>
 							<div className={classes.textFieldContainer}>
 								<label htmlFor="regimen">
-									<PersonIcon className={classes.fieldIcon} />
+									<BookIcon className={classes.fieldIcon} />
 								</label>
 								<TextField
 									className={classes.field}
@@ -257,8 +289,80 @@ export default function Factura({changePage}) {
 						</div>
 						<div className={classes.fieldContainer}>
 							<div className={classes.textFieldContainer}>
+								<label htmlFor="descripcion">
+									<BookIcon className={classes.fieldIcon} />
+								</label>
+								<TextField
+									className={classes.field}
+									variant="outlined"
+									margin="normal"
+									required
+									fullWidth
+									name="Descripción del producto"
+									label="Descripción del producto"
+									id="descripcion"
+									autoFocus
+									InputProps={{
+										className: classes.inputField,
+									}}
+									onChange={(e) => setDescripcion(e.target.value)}
+									value={descripcion}
+								/>
+							</div>
+						</div>
+						<div className={classes.fieldContainer}>
+							<div className={classes.textFieldContainer}>
+								<label htmlFor="cantidad">
+									<MoneyOffIcon className={classes.fieldIcon} />
+								</label>
+								<TextField
+									className={classes.field}
+									variant="outlined"
+									margin="normal"
+									required
+									fullWidth
+									name="Cantidad"
+									label="Cantidad"
+									id="cantidad"
+									type="number"
+									autoFocus
+									InputProps={{
+										className: classes.inputField,
+									}}
+									onChange={(e) => setCantidad(e.target.value)}
+									value={cantidad}
+								/>
+							</div>
+						</div>
+						<div className={classes.fieldContainer}>
+							<div className={classes.textFieldContainer}>
+								<label htmlFor="cantidad">
+									<MoneyOffIcon className={classes.fieldIcon} />
+								</label>
+								<TextField
+									className={classes.field}
+									variant="outlined"
+									margin="normal"
+									required
+									fullWidth
+									name="Valor unitario"
+									label="Valor unitario"
+									id="valor"
+									type="number"
+									autoFocus
+									InputProps={{
+										className: classes.inputField,
+									}}
+									onChange={(e) => setValor(e.target.value)}
+									value={valor}
+								/>
+							</div>
+						</div>
+								
+						<div className={classes.fieldContainer}>
+							<div className={classes.textFieldContainer}>
 								<label htmlFor="impuestos">
-									<PersonIcon className={classes.fieldIcon} />
+									<MoneyOffIcon className={classes.fieldIcon} />
 								</label>
 								<TextField
 									className={classes.field}
@@ -269,6 +373,7 @@ export default function Factura({changePage}) {
 									name="Impuestos"
 									label="Impuestos"
 									id="impuestos"
+									type="number"
 									autoFocus
 									InputProps={{
 										className: classes.inputField,
@@ -281,9 +386,10 @@ export default function Factura({changePage}) {
 						<div className={classes.fieldContainer}>
 							<div className={classes.textFieldContainer}>
 								<label htmlFor="cond_pago">
-									<PersonIcon className={classes.fieldIcon} />
+									<AccountBalanceIcon className={classes.fieldIcon} />
 								</label>
 								<Select 
+									className={classes.fieldSelect}
 									options={cond_pago_options} 
 									placeholder="Condición de pago" 
 									onChange={(e) => setCond_pago(e.value)}						
@@ -293,9 +399,10 @@ export default function Factura({changePage}) {
 						<div className={classes.fieldContainer}>
 							<div className={classes.textFieldContainer}>
 								<label htmlFor="metodo_pago">
-									<PersonIcon className={classes.fieldIcon} />
+									<PaymentsIcon className={classes.fieldIcon} />
 								</label>
 								<Select 
+									className={classes.fieldSelect}
 									options={metodo_pago_options} 
 									placeholder="Método de pago" 
 									onChange={(e) => setMetodo_pago(e.value)}	
