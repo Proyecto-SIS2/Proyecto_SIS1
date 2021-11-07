@@ -115,7 +115,7 @@ export default function Login() {
 	const [usuario, setUsuario] = useState("");
 	const [contra, setContra] = useState("");
 
-	 const tryLogin = (e) => {
+	const tryLogin = (e) =>{
 		const values = {
 			usuario: usuario,
 			contra: contra,
@@ -140,13 +140,16 @@ export default function Login() {
 		}
 	};
 
-	const updateLoginStatus = (data) => {
+	async function updateLoginStatus(data){
 		let stateMsg;
 
 		if (data.status === "correct") {
-			setLoginState(true);
 			localStorage.setItem("login", data.status === "correct");
 			localStorage.setItem("id", data.id);
+			if(localStorage.getItem("id")){
+				setLoginState(true);
+			}
+			//
 		} else if (data.status === "incorrect") {
 			stateMsg = "Contraseña inválida";
 
@@ -161,10 +164,7 @@ export default function Login() {
 				icon: "error",
 				title: stateMsg,
 			});
-		}
-		
-		
-		
+		}				
 	};
 
 	return (

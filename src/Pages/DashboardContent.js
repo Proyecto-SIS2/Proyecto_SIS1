@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import TableFacturas from "../Components/TableFacturas";
 
-export default function Historial() {
+export default function DashboardContent() {
 	return (
 		<Fragment>
 			<TableFacturas />

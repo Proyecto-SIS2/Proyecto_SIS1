@@ -1,10 +1,10 @@
 import React, { Fragment } from "react";
 import Header from "../Components/Header";
 import { makeStyles } from "@material-ui/core/styles";
-import Factura from "./Factura";
+import Factura from "../Components/Factura";
 import Historial from "./Historial";
-import Ajustes from "../Components/Ajustes"
-
+import Ajustes from "../Components/Ajustes";
+import DashboardContent from "./DashboardContent";
 
 const useStyles = makeStyles((theme) => ({
 	dashBoard: {
@@ -22,9 +22,10 @@ export default function Dashboard({ page, changePage }) {
 		<Fragment>
 			<Header changePage={changePage} />
 			<div className={classes.dashBoard}>
+				{page === "dashboard" && <DashboardContent />}
                 {page === "ajustes" && <Ajustes/>} 
                 {page === "factura" && <Factura />}
-				{page === "historial" && <Historial />}				
+				{page === "historial" && <Historial />}	
 			</div>
 		</Fragment>
 	);

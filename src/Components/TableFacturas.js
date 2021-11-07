@@ -240,10 +240,12 @@ export default function TableFacturas() {
 
   const [invoices, setInvoices] = React.useState([]);
 
+  const idu=localStorage.getItem("id");
+
   useEffect(() => {
 		async function getInvoices () {
 			if (!petition) {
-				await Service.postData("facturas/get_facturas").then((res) =>{
+				await Service.postData("facturas/get_facturas", {id:idu}).then((res) =>{
 					setInvoices(res);
 				})
 				setPetition(true);	
@@ -324,17 +326,7 @@ export default function TableFacturas() {
         </Grid>
         <Table className={classes.table} aria-label="customized table">
           <TableHead>
-            <TableRow>
-              <StyledTableCell align="center">
-                <Checkbox
-                  size="medium"
-                  className={classes.check}
-                  // onChange={handleChange}
-                  style={{
-                    transform: "scale(1.3)",
-                  }}
-                />
-              </StyledTableCell>
+            <TableRow>  
               <StyledTableCell align="center">ID</StyledTableCell>
               <StyledTableCell align="center">RFC Expedido</StyledTableCell>
               <StyledTableCell align="center">RFC Receptor</StyledTableCell>
@@ -342,32 +334,7 @@ export default function TableFacturas() {
               <StyledTableCell align="center">Impuestos</StyledTableCell>
               <StyledTableCell align="center">Condición de pago</StyledTableCell>
               <StyledTableCell align="center">Método de pago</StyledTableCell>
-              <StyledTableCell align="center">
-                <IconButton
-                  aria-label="more"
-                  aria-controls="long-menu"
-                  aria-haspopup="true"
-                  color="secondary"
-                  onClick={handleClick}
-                >
-                  <MoreHorizIcon className={classes.iconMore} />
-                </IconButton>
-                <Menu
-                  id="long-menu"
-                  anchorEl={anchorEl}
-                  keepMounted
-                  open={open}
-                  onClose={handleClose}
-                  MenuListProps={{
-                    className: classes.menulistMore,
-                  }}
-                >
-                  <Button className={classes.menuMoreDelete}>Eliminar</Button>
-                  <Button className={classes.menuMoreUnselect}>
-                    Deseleccionar
-                  </Button>
-                </Menu>
-              </StyledTableCell>
+              <StyledTableCell align="center">Descargar</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -375,19 +342,10 @@ export default function TableFacturas() {
 							filteredInvoices.map((row) => (
                 <StyledTableRow key={row.id_factura}>
                   <StyledTableCell align="center" component="th" scope="row">
-                    <Checkbox
-                      // onChange={handleChange}
-                      className={classes.checkTable}
-                      style={{
-                        transform: "scale(1.3)",
-                      }}
-                    />
-                  </StyledTableCell>
-                  <StyledTableCell align="center" component="th" scope="row">
                     <Link
-                      to={`/producto/`}
+                      to={`/factura-generada/`}
                       className={classes.linkAnchor}   
-                      onClick={() => { assignID(row.Id_producto) }}                
+                      onClick={() => { assignID(row.id_factura) }}                
                     >                     
                       {row.id_factura}
                     </Link>
@@ -423,15 +381,15 @@ export default function TableFacturas() {
                     </Typography>
                   </StyledTableCell>
                   <StyledTableCell align="center" component="th" scope="row">
-                    <Link
-                      to={`/producto/edit`}
+                    {/* <Link
+                      to={`/factura-generada`}
                       onClick={() => { assignID(row.Id_producto) }}
                       className={classes.linkAnchor}
-                    >
+                    > */}
                       <IconButton>
                         <SaveAltIcon className={classes.editBtn} />
                       </IconButton>
-                    </Link>
+                   {/*  </Link> */}
                   </StyledTableCell>
                   
                 </StyledTableRow>

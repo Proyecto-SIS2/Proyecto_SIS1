@@ -129,17 +129,18 @@ const metodo_pago_options = [
 	{ value: 'Transferencia bancaria', label: 'Transferencia bancaria' }
   ]
 
-export default function Factura() {
+export default function Factura({changePage}) {
 	const [rfc_exp, setRFC_Exp] = useState("");
 	const [rfc_rec, setRFC_Rec] = useState("");
 	const [regimen, setRegimen] = useState("");
 	const [impuestos, setImpuestos] = useState("");
 	const [cond_pago, setCond_pago] = useState("");
 	const [metodo_pago, setMetodo_pago] = useState("");
+	const [id_factura, setId_factura] = useState("");
 
-	// const [verifyAvailable, setVerifyAvailable] = useState(false);
+	const idu=localStorage.getItem("id");
+
 	const [blockSendButton, setBlockSendButton] = useState(true);
-
 	const [entryState, setEntryState] = useState(false);
 
 	useEffect(() => {
@@ -158,8 +159,9 @@ export default function Factura() {
 				impuestos: impuestos,
 				cond_pago: cond_pago,
 				metodo_pago: metodo_pago,
+				id: idu
 			};
-			console.log(params);
+		
 			Service.postData("facturas/register_factura", params).then((res) => {
 				if (res.status === "correct") {
 					setEntryState(true);
@@ -176,12 +178,9 @@ export default function Factura() {
 				}
 			});
 	};
-
 	const classes = useStyles();
-	let checkID = entryState;
 	return (
 		<Grid container className={classes.root}>
-			{checkID ? <Redirect to="/" /> : null}
 			<Grid item xs={12} sm={6}>
 				<img src={logo} alt="Logo" className={classes.logoImg} />
 			</Grid>
@@ -201,7 +200,6 @@ export default function Factura() {
 									name="RFC Expedido"
 									label="RFC Expedido"
 									id="rfc_exp"
-									autoComplete="RFC Expedido"
 									autoFocus
 									InputProps={{
 										className: classes.inputField,
@@ -225,7 +223,6 @@ export default function Factura() {
 									name="RFC Receptor"
 									label="RFC Receptor"
 									id="rfc_rec"
-									autoComplete="RFC Receptor"
 									autoFocus
 									InputProps={{
 										className: classes.inputField,
@@ -249,7 +246,6 @@ export default function Factura() {
 									name="Régimen"
 									label="Régimen"
 									id="regimen"
-									autoComplete="Régimen"
 									autoFocus
 									InputProps={{
 										className: classes.inputField,
@@ -273,7 +269,6 @@ export default function Factura() {
 									name="Impuestos"
 									label="Impuestos"
 									id="impuestos"
-									autoComplete="Impuestos"
 									autoFocus
 									InputProps={{
 										className: classes.inputField,
@@ -288,23 +283,6 @@ export default function Factura() {
 								<label htmlFor="cond_pago">
 									<PersonIcon className={classes.fieldIcon} />
 								</label>
-								{/* <TextField
-									className={classes.field}
-									variant="outlined"
-									margin="normal"
-									required
-									fullWidth
-									name="Condición de pago"
-									label="Condición de pago"
-									id="cond_pago"
-									autoComplete="Condición de pago"
-									autoFocus
-									InputProps={{
-										className: classes.inputField,
-									}}
-									onChange={(e) => setCond_pago(e.target.value)}
-									value={cond_pago}
-								/> */}
 								<Select 
 									options={cond_pago_options} 
 									placeholder="Condición de pago" 
@@ -317,23 +295,6 @@ export default function Factura() {
 								<label htmlFor="metodo_pago">
 									<PersonIcon className={classes.fieldIcon} />
 								</label>
-								{/* <TextField
-									className={classes.field}
-									variant="outlined"
-									margin="normal"
-									required
-									fullWidth
-									name="Método de pago"
-									label="Método de pago"
-									id="metodo_pago"
-									autoComplete="Método de pago"
-									autoFocus
-									InputProps={{
-										className: classes.inputField,
-									}}
-									onChange={(e) => setMetodo_pago(e.target.value)}
-									value={metodo_pago}
-								/> */}
 								<Select 
 									options={metodo_pago_options} 
 									placeholder="Método de pago" 
@@ -348,17 +309,11 @@ export default function Factura() {
 							color="primary"
 							className={classes.submit}
 							disabled={blockSendButton}
-							onClick={() => {manejarEnvio()}}
+							onClick={manejarEnvio}
 						>
-							Registrarse
+							Registrar factura
 						</Button>
-						<Grid container alignItems="center" direction="column">
-							<Grid item xs={12}>
-								<Link variant="body2" to="/" className={classes.textLink}>
-									¿Ya tienes cuenta?
-								</Link>
-							</Grid>
-						</Grid>
+						
 				</div>
 			</Grid>
 		</Grid>
