@@ -78,7 +78,7 @@ export default function CardEditSettings() {
 	const [blockSendButton, setBlockSendButton] = useState(true);
 
 	const [entryState, setEntryState] = useState(false);
-    const [flagMail, setFlagMail] = useState(false);
+    //const [flagMail, setFlagMail] = useState(false);
 	const [flagUser, setFlagUser] = useState(false);
     const [flagName, setFlagName] = useState(false);
     const [flagLastName, setFlagLastName] = useState(false);
@@ -128,13 +128,13 @@ export default function CardEditSettings() {
 					setBlockSendButton(false);
 					setVerifyAvailable(true);
 				}else{
-					setFlagMail(true);
+					//setFlagMail(true);
 					setBlockSendButton(true);
 				}
 			});
 		}
         if(!correo){
-            setFlagMail(true);
+            //setFlagMail(true);
             setBlockSendButton(true);
         }
 		if(nombre){
@@ -163,7 +163,7 @@ export default function CardEditSettings() {
         if(!apellido){
             setFlagLastName(true);
         }
-	}, [usuario, correo, nombre, usuarioS]);
+	}, [usuario, correo, nombre, usuarioS, apellido, flagName]);
 
 	const getSetting = () => {
 		if (!boolean) {

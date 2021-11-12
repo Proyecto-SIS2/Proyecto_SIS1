@@ -13,7 +13,6 @@ import TimelineIcon from '@material-ui/icons/Timeline';
 import SettingsIcon from "@material-ui/icons/Settings";
 import Service from "../Service";
 import logo from '../Images/logo.png'
-import LoyaltyIcon from "@material-ui/icons/Loyalty";
 
 const drawerWidth = 240;
 

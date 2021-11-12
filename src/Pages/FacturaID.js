@@ -13,7 +13,7 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-export default function FacturaID( {changePage } ) {
+export default function FacturaID( { changePage } ) {
     const classes = useStyles();
 
     return (

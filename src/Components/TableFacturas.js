@@ -6,10 +6,7 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Checkbox,
   IconButton,
-  Menu,
-  Button,
   Grid,
   Typography,
   InputBase,
@@ -18,12 +15,10 @@ import { withStyles, makeStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
 
 import Title from "./Title";
-
-import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
-import SaveAltIcon from '@material-ui/icons/SaveAlt';
+import Text from "./Text";
 import SearchIcon from "@material-ui/icons/Search";
 import Service from "../Service";
-import FacturaGenerada from "./FacturaGenerada";
+
 
 const StyledTableCell = withStyles((theme) => ({
   root: {
@@ -83,7 +78,7 @@ const useStyles = makeStyles((theme) => ({
 
   inputContainer: {
     backgroundColor: theme.palette.background.default,
-    display: "inline-flex",
+    display: "flex",
     borderRadius: ".5rem",
   },
   input: {
@@ -222,11 +217,12 @@ function useSearchInvoices(invoices) {
 		
 	useMemo(() => {			
 			const result = Object.values(invoices).filter((invoice) => {
-			if (query) {
-				return `${invoice.Nombre}`.toLowerCase().includes(query.toLowerCase());
-			}else{
-				return invoice;
-			}
+      if(query){
+        return `${invoice.id_factura} ${invoice.RFC_Rec} ${invoice.fecha}`.toLowerCase().includes(query.toLowerCase())
+      }
+      else{
+        return invoice;
+      }
 		});
 
     setFilteredInvoices(result);
@@ -237,39 +233,16 @@ function useSearchInvoices(invoices) {
 
 export default function TableFacturas() {
   const classes = useStyles();
-  const [petition, setPetition] = React.useState(false);
 
   const [invoices, setInvoices] = React.useState([]);
 
   const idu=localStorage.getItem("id");
 
   useEffect(() => {
-		async function getInvoices () {
-			if (!petition) {
-				await Service.postData("facturas/get_facturas", {id:idu}).then((res) =>{
+				Service.postData("facturas/get_facturas", {id:idu}).then((res) =>{
 					setInvoices(res);
 				})
-				setPetition(true);	
-			}
-		}
-		getInvoices();
-	}, [petition]);
-
-
-/*   const handleChange = (event) => {
-    setChecked(event.target.checked);
-  }; */
-
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const open = Boolean(anchorEl);
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+	}, [idu]);
 
   const { setQuery, filteredInvoices} = useSearchInvoices(invoices);
 
@@ -280,6 +253,8 @@ export default function TableFacturas() {
   return (
     <div>
       <Title>Facturas</Title>
+      <Text>Haga click en el ID para generar la factura</Text>
+      
       <TableContainer className={classes.tableContainer}>
         <Grid container className={classes.tableGrid}>
           <Grid
@@ -298,8 +273,9 @@ export default function TableFacturas() {
                 <SearchIcon className={classes.icon} />
               </IconButton>
               <InputBase
+                fullWidth={true}
                 className={classes.input}
-                placeholder="Buscar"
+                placeholder="Buscar por ID, por RFC Receptor o Fecha"
                 inputProps={{ "aria-label": "Buscar" }}
                 onChange={(e) => {
 									setQuery(e.target.value);
@@ -314,15 +290,6 @@ export default function TableFacturas() {
               textAlign: "end",
             }}
           >
-            {/* <Link to={`/agregar-productos`} className={classes.leadsLink}>
-              <Button
-                variant="contained"
-                className={classes.gridBtn}
-                startIcon={<AddCircleIcon />}
-              >
-                Agregar Producto
-              </Button>
-            </Link> */}
           </Grid>
         </Grid>
         <Table className={classes.table} aria-label="customized table">
@@ -335,7 +302,7 @@ export default function TableFacturas() {
               <StyledTableCell align="center">Impuestos</StyledTableCell>
               <StyledTableCell align="center">Condición de pago</StyledTableCell>
               <StyledTableCell align="center">Método de pago</StyledTableCell>
-              <StyledTableCell align="center">Descargar</StyledTableCell>
+              <StyledTableCell align="center">Fecha</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -382,17 +349,10 @@ export default function TableFacturas() {
                     </Typography>
                   </StyledTableCell>
                   <StyledTableCell align="center" component="th" scope="row">
-                    {/* <Link
-                      to={`/factura-generada`}
-                      onClick={() => { assignID(row.Id_producto) }}
-                      className={classes.linkAnchor}
-                    > */}
-                      <IconButton>
-                        <SaveAltIcon className={classes.editBtn} />
-                      </IconButton>
-                   {/*  </Link> */}
-                  </StyledTableCell>
-                  
+                    <Typography className={classes.tableUserText} variant="h5">
+                      {row.fecha}
+                    </Typography>
+                  </StyledTableCell>   
                 </StyledTableRow>
               ))}
           </TableBody>

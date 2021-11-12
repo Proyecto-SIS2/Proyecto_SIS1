@@ -1,16 +1,15 @@
-import React, {useState, useEffect, useMemo, componentDidMount} from 'react';
+import React, {useState, useEffect} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import jsPDF from 'jspdf';
 import pdfMake from 'pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { Link } from "react-router-dom";
 import htmlToPdfmake from 'html-to-pdfmake';
 import { makeStyles } from "@material-ui/core/styles";
-import { Paper, List, Typography, ListItem, Button } from "@material-ui/core";
+import { Button } from "@material-ui/core";
 import KeyboardReturnIcon from "@material-ui/icons/KeyboardReturn";
 import Service from "../Service";
 import ReactLoading from "react-loading";
-import '../App.css';
+import './Factura.css'
 
 const useStyles = makeStyles((theme) => ({
 	card: {
@@ -78,7 +77,6 @@ export default function FacturaGenerada(){
     const classes = useStyles();
 	const [booleana, setBooleana] = useState(false);
 	const [invoice, setInvoice] = useState([]);
-	const [datos, setDatos] = useState([]);
 	const id = localStorage.getItem("id_factura");
   
 	useEffect (()=> {
@@ -86,11 +84,9 @@ export default function FacturaGenerada(){
 			setInvoice(res);
 			setBooleana(true);
 		})
-	}, []);
+	}, [id]);
 
     function printDocument(){ 
-		console.log(invoice[0].id_factura);
-		const doc = new jsPDF();
 		const pdfTable = document.getElementById('divToPrint');
 		var html = htmlToPdfmake(pdfTable.innerHTML);
 	
@@ -100,15 +96,33 @@ export default function FacturaGenerada(){
     }
 
 	if(booleana){
-    return (
+		let subtotal = 0;
+		let impuestos = 0;
+		let id = "";
+		switch(invoice[0].id_factura.length){
+			case 1: 
+				id = "0000"
+				break;
+			case 2:
+				id = "000"
+				break;
+			case 3:
+				id = "00"
+				break;
+			case 4:
+				id = "0"
+				break;
+			default:
+				id = "00000"
+		}
+    	return (
     		<><div className="App container mt-5">
 						<div id="divToPrint" className="m-3">
 							<div class="row d-flex justify-content-center">
 								<div class="col-md-8">
 									<div class="card">
 										<div class="d-flex flex-row p-2">
-											<div class="d-flex flex-column"> <span class="font-weight-bold">Factura no°</span>{invoice[0].id_factura}</div>
-
+										<div class="d-flex flex-column"> <span class="font-weight-bold">Folio Factura</span> <small>FAC-{id + invoice[0].id_factura.toString()}</small> </div>
 										</div>
 
 										<hr />
@@ -116,12 +130,12 @@ export default function FacturaGenerada(){
 											<table class="table table-borderless">
 												<tbody>
 													<tr class="add">
-														<td>Expedido</td>
-														<td>Remitente</td>
+														<td>RFC Expedido</td>
+														<td>RFC Receptor</td>
 													</tr>
 													<tr class="content">
-														<td class="font-weight-bold">Google <br />{invoice[0].id_factura}<br />Australia</td>
-														<td class="font-weight-bold">Facebook <br /> {invoice[0].id_factura} <br /> USA</td>
+														<td class="font-weight-bold">{invoice[0].RFC_Exp}</td>
+														<td class="font-weight-bold">{invoice[0].RFC_Rec}</td>
 													</tr>
 												</tbody>
 											</table>
@@ -131,47 +145,33 @@ export default function FacturaGenerada(){
 											<table class="table table-borderless">
 												<tbody>
 													<tr class="add">
-														<td>Description</td>
-														<td>Days</td>
-														<td>Price</td>
-														<td class="text-center">Total</td>
-													</tr>
-													<tr class="content">
-														<td>Website Redesign</td>
-														<td>15</td>
-														<td>$1,500</td>
-														<td class="text-center">$22,500</td>
-													</tr>
-													<tr class="content">
-														<td>Logo & Identity</td>
-														<td>10</td>
-														<td>$1,500</td>
-														<td class="text-center">$15,000</td>
-													</tr>
-													<tr class="content">
-														<td>Marketing Collateral</td>
-														<td>3</td>
-														<td>$1,500</td>
-														<td class="text-center">$4,500</td>
-													</tr>
-												</tbody>
-											</table>
-										</div>
-										<hr />
-										<div class="products p-2">
-											<table class="table table-borderless">
-												<tbody>
-													<tr class="add">
-														<td></td>
+														<td>Descripción del producto</td>
+														<td>Cantidad</td>
+														<td>Precio</td>
 														<td>Subtotal</td>
-														<td>GST(10%)</td>
+													</tr>
+													<tr class="content">
+														<td>{invoice[0].descripcion_producto}</td>
+														<td >{invoice[0].cantidad}</td>
+														<td>${invoice[0].valor_unitario}</td>
+														<td >${subtotal = (invoice[0].cantidad * invoice[0].valor_unitario)}</td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+										<hr />
+										<div class="products p-2">
+											<table class="table table-borderless">
+												<tbody>
+													<tr class="add">
+														<td class="text-center">Subtotal</td>
+														<td class="text-center">Impuestos ({invoice[0].impuestos}%)</td>
 														<td class="text-center">Total</td>
 													</tr>
 													<tr class="content">
-														<td></td>
-														<td>$40,000</td>
-														<td>2,500</td>
-														<td class="text-center">$42,500</td>
+														<td class="text-center">${subtotal}</td>
+														<td class="text-center">${impuestos = (subtotal) * (invoice[0].impuestos / 100)}</td>
+														<td class="text-center">${subtotal + impuestos}</td>
 													</tr>
 												</tbody>
 											</table>
@@ -181,10 +181,10 @@ export default function FacturaGenerada(){
 											<table class="table table-borderless">
 												<tbody>
 													<tr class="add">
-														<td>Bank Details</td>
+														<td>Detalles</td>
 													</tr>
 													<tr class="content">
-														<td> Bank Name: ADS BANK <br /> Swift Code: 00220022 <br /> Account Holder: Jassa Pepper <br /> Account Number: 6953PO789 <br /> </td>
+														<td> Régimen: {invoice[0].regimen} <br /> Condición de pago: {invoice[0].cond_pago} <br /> Método de pago: {invoice[0].metodo_pago}</td>
 													</tr>
 												</tbody>
 											</table>
