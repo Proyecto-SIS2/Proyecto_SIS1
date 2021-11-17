@@ -239,7 +239,6 @@ export default function Factura() {
 								name="RFC Expedido"
 								label="RFC Expedido"
 								id="rfc_exp"
-								autoFocus
 								InputProps={{
 									className: classes.inputField,
 								}}
@@ -262,7 +261,6 @@ export default function Factura() {
 								name="RFC Receptor"
 								label="RFC Receptor"
 								id="rfc_rec"
-								autoFocus
 								InputProps={{
 									className: classes.inputField,
 								}}
@@ -271,29 +269,6 @@ export default function Factura() {
 							/>
 						</div>
 					</div>
-					{/* <div className={classes.fieldContainer}>
-						<div className={classes.textFieldContainer}>
-							<label htmlFor="regimen">
-								<BookIcon className={classes.fieldIcon} />
-							</label>
-							<TextField
-								className={classes.field}
-								variant="outlined"
-								margin="normal"
-								required
-								fullWidth
-								name="Régimen"
-								label="Régimen"
-								id="regimen"
-								autoFocus
-								InputProps={{
-									className: classes.inputField,
-								}}
-								onChange={(e) => setRegimen(e.target.value)}
-								value={regimen}
-							/>
-						</div>
-					</div> */}
 					<div className={classes.fieldContainer}>
 						<div className={classes.textFieldContainer}>
 							<label htmlFor="descripcion">
@@ -308,7 +283,6 @@ export default function Factura() {
 								name="Descripción del producto"
 								label="Descripción del producto"
 								id="descripcion"
-								autoFocus
 								InputProps={{
 									className: classes.inputField,
 								}}
@@ -332,7 +306,6 @@ export default function Factura() {
 								label="Cantidad"
 								id="cantidad"
 								type="number"
-								autoFocus
 								InputProps={{
 									className: classes.inputField,
 								}}
@@ -356,7 +329,6 @@ export default function Factura() {
 								label="Valor unitario"
 								id="valor"
 								type="number"
-								autoFocus
 								InputProps={{
 									className: classes.inputField,
 								}}
@@ -381,7 +353,6 @@ export default function Factura() {
 								label="Impuestos"
 								id="impuestos"
 								type="number"
-								autoFocus
 								InputProps={{
 									className: classes.inputField,
 								}}

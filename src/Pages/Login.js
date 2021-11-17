@@ -189,7 +189,6 @@ export default function Login() {
 							label="Usuario"
 							id="usuario"
 							autoComplete="nickname"
-							autoFocus
 							InputProps={{
 								className: classes.inputField,
 							}}

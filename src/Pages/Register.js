@@ -127,16 +127,98 @@ export default function Register() {
 	const [usuario, setUsuario] = useState("");
 
 	const [verifyAvailable, setVerifyAvailable] = useState(false);
+	const [flagUser, setFlagUser] = useState(false);
+	const [flagEmail, setFlagEmail] = useState(false);
 	const [blockSendButton, setBlockSendButton] = useState(true);
 
 	const [entryState, setEntryState] = useState(false);
 
 	useEffect(() => {
-		if(nombre && apellido && contra && correo && usuario) {
-			setBlockSendButton(false);
-			setVerifyAvailable(true);
+		/* const checarDisponibilidad = (e) =>{
+			const params = {
+				usuario: usuario,
+				correo: correo,
+			}
+			Service.postData("user/check_available_register", params).then((res) => {
+				if(res.estadoUser && res.estadoMail){
+					setVerifyAvailable(true);
+					setFlagUser(false);
+					setFlagEmail(false);
+					document.getElementById("existent-user").style.display = "none";
+					document.getElementById("existent-email").style.display = "none";
+				}else if(res.estadoUser && !res.estadoMail){
+					setFlagEmail(true);
+					setFlagUser(false);
+					setVerifyAvailable(false);
+					document.getElementById("existent-email").style.display = "initial";
+					document.getElementById("existent-user").style.display = "none";
+				}else if(!res.estadoUser && res.estadoMail){
+					setFlagUser(true);
+					setFlagEmail(false);
+					setVerifyAvailable(false);
+					document.getElementById("existent-email").style.display = "none";
+					document.getElementById("existent-user").style.display = "initial";
+				}else{
+					setFlagUser(true);
+					setFlagEmail(true);
+					setVerifyAvailable(false);
+					document.getElementById("existent-email").style.display = "initial";
+					document.getElementById("existent-user").style.display = "initial";
+				}
+			})
 		}
-	}, [nombre, apellido, contra, correo, usuario]);
+		checarDisponibilidad();
+
+		if(nombre && apellido && contra && correo && usuario && verifyAvailable) {
+			setBlockSendButton(false);	
+		}else{
+			setBlockSendButton(true);
+		} */
+	},[nombre, apellido, contra, usuario, correo, verifyAvailable, flagUser, flagEmail]);
+	
+	useEffect(() => {
+		if(usuario){
+			Service.postData("user/check_available_user", usuario).then((data) => {
+				if(data.estadoUser){
+					document.getElementById("existent-user").style.display = "none";
+					setFlagUser(false);
+					setVerifyAvailable(true);
+				}else{
+					document.getElementById("existent-user").style.display = "initial";
+                    setFlagUser(true);
+					setVerifyAvailable(false);
+                }
+			});
+		}
+
+		if((correo.split("@")[0] && !(correo.split("@")[1])) || (!(correo.split(".")[1]) && correo !== "")){
+			document.getElementById("incorrect-email").style.display = "initial";
+			document.getElementById("existent-email").style.display = "none";
+			setFlagEmail(true);
+		}
+		else{
+			Service.postData("user/check_available_email", correo).then((data) => {
+				document.getElementById("incorrect-email").style.display = "none";
+				if(data.estadoMail){
+					document.getElementById("existent-email").style.display = "none";
+					setFlagEmail(false);
+					setVerifyAvailable(true);
+				}else{
+					document.getElementById("existent-email").style.display = "initial";
+                    setFlagEmail(true);
+					setVerifyAvailable(false);
+                }
+			});
+		}
+	},[usuario, correo]);
+
+	useEffect(() => {
+		if(nombre && apellido && contra && correo && usuario && verifyAvailable) {
+			setBlockSendButton(false);	
+		}else{
+			setBlockSendButton(true);
+		}
+	}, [nombre, apellido, contra, usuario, correo, verifyAvailable, flagUser, flagEmail]);
 
 	const manejarEnvio = (e) => {
 		setBlockSendButton(true);
@@ -195,7 +277,6 @@ export default function Register() {
 									label="Nombre"
 									id="nombre"
 									autoComplete="nombre"
-									autoFocus
 									InputProps={{
 										className: classes.inputField,
 									}}
@@ -244,8 +325,12 @@ export default function Register() {
 								}}
 								onChange={(e) => setUsuario(e.target.value)}
 								value={usuario}
+								error={flagUser}
 							/>
 						</div>
+						<p id="existent-user" className={classes.alertText}>
+								Este usuario ya se encuentra registrado
+						</p>
 						<div className={classes.fieldContainer}>
 							<div className={classes.textFieldContainer}>
 								<label htmlFor="correo">
@@ -267,8 +352,15 @@ export default function Register() {
 									}}
 									onChange={(e) => setCorreo(e.target.value)}
 									value={correo}
+									error={flagEmail}
 								/>
 							</div>
+							<p id="existent-email" className={classes.alertText}>
+								Este correo ya se encuentra registrado
+							</p>
+							<p id="incorrect-email" className={classes.alertText}>
+									Este correo no es válido
+							</p>
 						</div>
 						<div className={classes.textFieldContainer}>
 							<label htmlFor="contra">
