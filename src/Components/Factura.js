@@ -11,6 +11,9 @@ import AccountBalanceIcon from '@material-ui/icons/AccountBalance';
 import MoneyOffIcon from '@material-ui/icons/MoneyOff';
 import BookIcon from '@material-ui/icons/Book';
 import ContactMailIcon from '@material-ui/icons/ContactMail';
+import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
+import LocalOfferIcon from '@material-ui/icons/LocalOffer';
+import BookmarksIcon from '@material-ui/icons/Bookmarks';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -176,13 +179,13 @@ export default function Factura() {
 	const idu=localStorage.getItem("id");
 
 	const [blockSendButton, setBlockSendButton] = useState(true);
-	//const [entryState, setEntryState] = useState(false);
+	const [entryState, setEntryState] = useState(false);
 
 	useEffect(() => {
-		if(rfc_exp && rfc_rec && regimen && impuestos){
+		if(rfc_exp && rfc_rec && regimen && impuestos && cond_pago && metodo_pago && descripcion && cantidad && valor){
 			setBlockSendButton(false);
 		}
-	}, [rfc_exp, rfc_rec, regimen, impuestos, cond_pago, metodo_pago]);
+	}, [rfc_exp, rfc_rec, regimen, impuestos, cond_pago, metodo_pago, descripcion, cantidad, valor]);
 
 	const manejarEnvio = (e) => {
 		
@@ -202,13 +205,13 @@ export default function Factura() {
 		
 			Service.postData("facturas/register_factura", params).then((res) => {
 				if (res.status === "correct") {
-					//setEntryState(true);
+					setEntryState(true);
 					Toast.fire({
 						icon: "success",
 						title: "Registro de factura exitoso",
 					});
 				} else {
-					//setEntryState(false);
+					setEntryState(false);
 					Toast.fire({
 						icon: "error",
 						title: "Fallo en el registro",
@@ -219,7 +222,7 @@ export default function Factura() {
 	const classes = useStyles();
 	return (
 		<Grid container className={classes.root}>
-			
+			{entryState ? window.location.reload() : null}
 			<Grid item xs={12} sm={6}>
 				<img src={logo} alt="Logo" className={classes.logoImg} />
 			</Grid>
@@ -294,7 +297,7 @@ export default function Factura() {
 					<div className={classes.fieldContainer}>
 						<div className={classes.textFieldContainer}>
 							<label htmlFor="cantidad">
-								<MoneyOffIcon className={classes.fieldIcon} />
+								<LocalOfferIcon className={classes.fieldIcon} />
 							</label>
 							<TextField
 								className={classes.field}
@@ -317,7 +320,7 @@ export default function Factura() {
 					<div className={classes.fieldContainer}>
 						<div className={classes.textFieldContainer}>
 							<label htmlFor="cantidad">
-								<MoneyOffIcon className={classes.fieldIcon} />
+								<AttachMoneyIcon className={classes.fieldIcon} />
 							</label>
 							<TextField
 								className={classes.field}
@@ -381,7 +384,7 @@ export default function Factura() {
 					<div className={classes.fieldContainer}>
 						<div className={classes.textFieldContainer}>
 							<label htmlFor="cond_pago">
-								<AccountBalanceIcon className={classes.fieldIcon} />
+								<BookmarksIcon className={classes.fieldIcon} />
 							</label>
 							<Select 
 								className={classes.fieldSelect}

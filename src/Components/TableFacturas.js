@@ -218,7 +218,7 @@ function useSearchInvoices(invoices) {
 	useMemo(() => {			
 			const result = Object.values(invoices).filter((invoice) => {
       if(query){
-        return `${invoice.id_factura} ${invoice.RFC_Rec} ${invoice.fecha}`.toLowerCase().includes(query.toLowerCase())
+        return `${invoice.RFC_Rec} ${invoice.fecha}`.toLowerCase().includes(query.toLowerCase())
       }
       else{
         return invoice;
@@ -275,7 +275,7 @@ export default function TableFacturas() {
               <InputBase
                 fullWidth={true}
                 className={classes.input}
-                placeholder="Buscar por ID, por RFC Receptor o Fecha"
+                placeholder="Buscar por RFC Receptor o Fecha"
                 inputProps={{ "aria-label": "Buscar" }}
                 onChange={(e) => {
 									setQuery(e.target.value);

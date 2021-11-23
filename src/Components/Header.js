@@ -159,7 +159,7 @@ export default function Header({ changePage }) {
 						<Link className={classes.drawerLink} onClick={() => changePage("factura")}>
 							<PostAddIcon className={classes.drawerIcon} />
 							<Typography className={classes.drawerLinkText} variant="h5">
-								Generar Factura
+								Crear Factura
 							</Typography>
 						</Link>
 					</ListItem>
