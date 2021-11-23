@@ -132,49 +132,6 @@ export default function Register() {
 	const [blockSendButton, setBlockSendButton] = useState(true);
 
 	const [entryState, setEntryState] = useState(false);
-
-	useEffect(() => {
-		/* const checarDisponibilidad = (e) =>{
-			const params = {
-				usuario: usuario,
-				correo: correo,
-			}
-			Service.postData("user/check_available_register", params).then((res) => {
-				if(res.estadoUser && res.estadoMail){
-					setVerifyAvailable(true);
-					setFlagUser(false);
-					setFlagEmail(false);
-					document.getElementById("existent-user").style.display = "none";
-					document.getElementById("existent-email").style.display = "none";
-				}else if(res.estadoUser && !res.estadoMail){
-					setFlagEmail(true);
-					setFlagUser(false);
-					setVerifyAvailable(false);
-					document.getElementById("existent-email").style.display = "initial";
-					document.getElementById("existent-user").style.display = "none";
-				}else if(!res.estadoUser && res.estadoMail){
-					setFlagUser(true);
-					setFlagEmail(false);
-					setVerifyAvailable(false);
-					document.getElementById("existent-email").style.display = "none";
-					document.getElementById("existent-user").style.display = "initial";
-				}else{
-					setFlagUser(true);
-					setFlagEmail(true);
-					setVerifyAvailable(false);
-					document.getElementById("existent-email").style.display = "initial";
-					document.getElementById("existent-user").style.display = "initial";
-				}
-			})
-		}
-		checarDisponibilidad();
-
-		if(nombre && apellido && contra && correo && usuario && verifyAvailable) {
-			setBlockSendButton(false);	
-		}else{
-			setBlockSendButton(true);
-		} */
-	},[nombre, apellido, contra, usuario, correo, verifyAvailable, flagUser, flagEmail]);
 	
 	useEffect(() => {
 		if(usuario){
@@ -189,6 +146,10 @@ export default function Register() {
 					setVerifyAvailable(false);
                 }
 			});
+		}else{
+			document.getElementById("existent-user").style.display = "none";
+			setFlagUser(false);
+			setVerifyAvailable(true);
 		}
 
 		if((correo.split("@")[0] && !(correo.split("@")[1])) || (!(correo.split(".")[1]) && correo !== "")){
@@ -210,10 +171,10 @@ export default function Register() {
                 }
 			});
 		}
-	},[usuario, correo]);
+	},[usuario, correo, flagEmail]);
 
 	useEffect(() => {
-		if(nombre && apellido && contra && correo && usuario && verifyAvailable) {
+		if(nombre && apellido && contra && correo && usuario && verifyAvailable && !flagUser && !flagEmail) {
 			setBlockSendButton(false);	
 		}else{
 			setBlockSendButton(true);
