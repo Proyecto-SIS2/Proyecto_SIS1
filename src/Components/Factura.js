@@ -139,7 +139,7 @@ const Toast = Swal.mixin({
 	},
 	background: "#212936",
 	toast: true,
-	position: "top",
+	position: "middle",
 	showConfirmButton: false,
 	timer: 1500,
 	timerProgressBar: true,
