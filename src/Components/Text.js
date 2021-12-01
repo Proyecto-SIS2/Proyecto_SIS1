@@ -6,6 +6,7 @@ const useStyles = makeStyles((theme) => ({
 	text: {
 		color: theme.palette.text.light,
 		textAlign: "center",
+		marginTop: "25px",
 	},
 }));
 

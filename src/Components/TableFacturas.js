@@ -218,7 +218,7 @@ function useSearchInvoices(invoices) {
 	useMemo(() => {			
 			const result = Object.values(invoices).filter((invoice) => {
       if(query){
-        return `${invoice.RFC_Rec} ${invoice.fecha}`.toLowerCase().includes(query.toLowerCase())
+        return `${invoice.nombre_empresa} ${invoice.nombre_facturador} ${invoice.nombre_cliente} ${invoice.fecha}`.toLowerCase().includes(query.toLowerCase())
       }
       else{
         return invoice;
@@ -275,7 +275,7 @@ export default function TableFacturas() {
               <InputBase
                 fullWidth={true}
                 className={classes.input}
-                placeholder="Buscar por RFC Receptor o Fecha"
+                placeholder="Buscar por Nombre Empresa, Nombre Facturador, Nombre Cliente o Fecha"
                 inputProps={{ "aria-label": "Buscar" }}
                 onChange={(e) => {
 									setQuery(e.target.value);
@@ -296,10 +296,10 @@ export default function TableFacturas() {
           <TableHead>
             <TableRow>  
               <StyledTableCell align="center">ID</StyledTableCell>
-              <StyledTableCell align="center">RFC Expedido</StyledTableCell>
-              <StyledTableCell align="center">RFC Receptor</StyledTableCell>
+              <StyledTableCell align="center">Nombre Empresa</StyledTableCell>
+              <StyledTableCell align="center">Nombre Facturador</StyledTableCell>
+              <StyledTableCell align="center">Nombre Cliente</StyledTableCell>
               <StyledTableCell align="center">Régimen</StyledTableCell>
-              <StyledTableCell align="center">Impuestos</StyledTableCell>
               <StyledTableCell align="center">Condición de pago</StyledTableCell>
               <StyledTableCell align="center">Método de pago</StyledTableCell>
               <StyledTableCell align="center">Fecha</StyledTableCell>
@@ -307,8 +307,8 @@ export default function TableFacturas() {
           </TableHead>
           <TableBody>
           {filteredInvoices.length !== 0 &&
-							filteredInvoices.map((row) => (
-                <StyledTableRow key={row.id_factura}>
+							filteredInvoices.map((row, facturaIdx) => (
+                <StyledTableRow key={facturaIdx}>
                   <StyledTableCell align="center" component="th" scope="row">
                     <Link
                       to={`/factura-generada/`}
@@ -318,26 +318,31 @@ export default function TableFacturas() {
                       {row.id_factura}
                     </Link>
                   </StyledTableCell>
+                  
                   <StyledTableCell align="center" component="th" scope="row">
                     <Typography className={classes.tableUserText} variant="h5">
-                      {row.RFC_Exp}
+                      {row.nombre_empresa}
                     </Typography>
                   </StyledTableCell>
+
                   <StyledTableCell align="center" component="th" scope="row">
                     <Typography className={classes.tableUserText} variant="h5">
-                      {row.RFC_Rec}
+                      {row.nombre_facturador}
                     </Typography>
                   </StyledTableCell>
+
+                  <StyledTableCell align="center" component="th" scope="row">
+                    <Typography className={classes.tableUserText} variant="h5">
+                      {row.nombre_cliente}
+                    </Typography>
+                  </StyledTableCell>
+                  
                   <StyledTableCell align="center" component="th" scope="row">
                     <Typography className={classes.tableUserText} variant="h5">
                       {row.regimen}
                     </Typography>
                   </StyledTableCell>
-                  <StyledTableCell align="center" component="th" scope="row">
-                    <Typography className={classes.tableUserText} variant="h5">
-                      {row.impuestos}
-                    </Typography>
-                  </StyledTableCell>
+                  
                   <StyledTableCell align="center" component="th" scope="row">
                     <Typography className={classes.tableUserText} variant="h5">
                       {row.cond_pago}

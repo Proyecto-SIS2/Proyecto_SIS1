@@ -5,7 +5,8 @@ hr {
     margin-bottom: 5px
 }
 .add td {
-    color: #c5c4c4;
+    color: #000;
+    background-color: #A9D2FA;
     text-transform: uppercase;
     font-size: 12px
 }

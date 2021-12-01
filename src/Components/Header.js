@@ -121,9 +121,9 @@ export default function Header({ changePage }) {
 			<AppBar position="fixed" className={classes.appBar}>
 				<Toolbar className={classes.toolbarAppBar}>
 				{usuario &&
-					usuario.map((u) => {
+					usuario.map((u, uIdx) => {
 						return (
-							<List className={classes.toolbarList}>
+							<List className={classes.toolbarList} key={uIdx}>
 								<ListItem className={classes.toolbarItem}>
 									<Typography className={classes.toolbarItemText} variant="h5">
 										Bienvenido

@@ -3,26 +3,30 @@ import { Button, TextField, Paper, Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Swal from "sweetalert2";
 import Select from 'react-select'
+import Text from "./Text";
 
 import Service from "../Service";
 import logo from "../Images/logo.png"
 import PaymentsIcon from '@material-ui/icons/Payment';
 import AccountBalanceIcon from '@material-ui/icons/AccountBalance';
-import MoneyOffIcon from '@material-ui/icons/MoneyOff';
 import BookIcon from '@material-ui/icons/Book';
 import ContactMailIcon from '@material-ui/icons/ContactMail';
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 import LocalOfferIcon from '@material-ui/icons/LocalOffer';
 import BookmarksIcon from '@material-ui/icons/Bookmarks';
+import BusinessIcon from '@material-ui/icons/Business';
+import RoomIcon from '@material-ui/icons/Room';
+import LocationCityIcon from '@material-ui/icons/LocationCity';
+import MailIcon from '@material-ui/icons/Mail';
+import LocalPhoneIcon from '@material-ui/icons/LocalPhone';
+import PersonIcon from '@material-ui/icons/Person';
+import Mail from "@material-ui/icons/Mail";
 
 const useStyles = makeStyles((theme) => ({
 	root: {
 		maxWidth: "1200px",
 		margin: "0 auto",
-		[[theme.breakpoints.up("sm")]]: {
-			alignItems: "center",
-			height: "100vh",
-		},
+		
 	},
 	paper: {
 		display: "flex",
@@ -30,16 +34,14 @@ const useStyles = makeStyles((theme) => ({
 		alignItems: "center",
 		backgroundColor: theme.palette.background.default,
 		padding: 20,
+		height: "650px",
 	},
 	logoImg: {
-		width: "50%",
+		width: "75%",
 		display: "block",
 		margin: "0 auto",
 		padding: "20px 0",
-		[[theme.breakpoints.up("sm")]]: {
-			width: "100%",
-			padding: "20px",
-		},
+		
 	},
 	form: {
 		width: "100%",
@@ -51,6 +53,7 @@ const useStyles = makeStyles((theme) => ({
 		"& > label": {
 			margin: "10px 10px 0 0",
 		},
+		
 	},
 	loginContainer: {
 
@@ -166,10 +169,23 @@ const metodo_pago_options = [
   ]
 
 export default function Factura() {
+
+	//Estados de la empresa
+	const [nombreEmpresa, setNombreEmpresa] = useState("");
+	const [direccionEmpresa, setDireccionEmpresa] = useState("");
+	const [ciudadEstadoEmpresa, setCiudadEstadoEmpresa] = useState("");
+	const [codigoPostalEmpresa, setCodigoPostalEmpresa] = useState("");
+	const [telefonoEmpresa, setTelefonoEmpresa] = useState("");
+	const [nombreFacturador, setNombreFacturador] = useState("");
 	const [rfc_exp, setRFC_Exp] = useState("");
+
+	//Estados del cliente
+	const [nombreCliente, setNombreCliente] = useState("");
+	const [direccionCliente, setDireccionCliente] = useState("");
+	const [ciudadEstadoCliente, setCiudadEstadoCliente] = useState("");
+	const [codigoPostalCliente, setCodigoPostalCliente] = useState("");
 	const [rfc_rec, setRFC_Rec] = useState("");
 	const [regimen, setRegimen] = useState("");
-	const [impuestos, setImpuestos] = useState("");
 	const [cond_pago, setCond_pago] = useState("");
 	const [metodo_pago, setMetodo_pago] = useState("");
 	const [descripcion, setDescripcion] = useState("");
@@ -182,10 +198,21 @@ export default function Factura() {
 	const [entryState, setEntryState] = useState(false);
 
 	useEffect(() => {
-		if(rfc_exp && rfc_rec && regimen && impuestos && cond_pago && metodo_pago && descripcion && cantidad && valor){
+		if(nombreFacturador && nombreEmpresa && direccionEmpresa && ciudadEstadoEmpresa && codigoPostalEmpresa && telefonoEmpresa && rfc_exp && nombreCliente && direccionCliente && ciudadEstadoCliente && codigoPostalCliente && rfc_rec && regimen && cond_pago && metodo_pago && descripcion && cantidad && valor){
 			setBlockSendButton(false);
 		}
-	}, [rfc_exp, rfc_rec, regimen, impuestos, cond_pago, metodo_pago, descripcion, cantidad, valor]);
+		if(telefonoEmpresa.length >= 10){
+			setTelefonoEmpresa(telefonoEmpresa.slice(0, 10));  
+		}if(codigoPostalEmpresa.length >= 5){
+			setCodigoPostalEmpresa(codigoPostalEmpresa.slice(0, 5));
+		}if(codigoPostalCliente.length >= 5){
+			setCodigoPostalCliente(codigoPostalCliente.slice(0, 5));
+		}if(rfc_exp.length >= 13){
+			setRFC_Exp(rfc_exp.slice(0, 13));
+		}if(rfc_rec.length >= 13){
+			setRFC_Rec(rfc_rec.slice(0, 13));
+		}
+	}, [nombreFacturador, nombreEmpresa, direccionEmpresa, ciudadEstadoEmpresa, codigoPostalEmpresa, telefonoEmpresa, nombreCliente, direccionCliente, ciudadEstadoCliente, codigoPostalCliente, rfc_exp, rfc_rec, regimen, cond_pago, metodo_pago, descripcion, cantidad, valor]);
 
 	const manejarEnvio = (e) => {
 		
@@ -194,15 +221,24 @@ export default function Factura() {
 				rfc_exp: rfc_exp,
 				rfc_rec: rfc_rec,
 				regimen: regimen,
-				impuestos: impuestos,
+				impuestos: 16,
 				cond_pago: cond_pago,
 				metodo_pago: metodo_pago,
 				id: idu,
 				descripcion: descripcion,
 				cantidad: cantidad,
-				valor: valor
+				valor: valor,
+				nombreEmpresa: nombreEmpresa,
+				direccionEmpresa: direccionEmpresa,
+				ciudadEstadoEmpresa: ciudadEstadoEmpresa,
+				codigoPostalEmpresa: codigoPostalEmpresa,
+				telefonoEmpresa: telefonoEmpresa,
+				nombreCliente: nombreCliente,
+				direccionCliente: direccionCliente,
+				ciudadEstadoCliente: ciudadEstadoCliente,
+				codigoPostalCliente: codigoPostalCliente,
+				nombreFacturador: nombreFacturador,
 			};
-		
 			Service.postData("facturas/register_factura", params).then((res) => {
 				if (res.status === "correct") {
 					setEntryState(true);
@@ -219,15 +255,152 @@ export default function Factura() {
 				}
 			});
 	};
+
 	const classes = useStyles();
 	return (
 		<Grid container className={classes.root}>
 			{entryState ? window.location.reload() : null}
-			<Grid item xs={12} sm={6}>
-				<img src={logo} alt="Logo" className={classes.logoImg} />
-			</Grid>
-			<Grid item xs={12} sm={6} component={Paper} elevation={6} square className={classes.loginContainer}>
+			<img src={logo} alt="Logo" className={classes.logoImg} />
+			<Grid item xs={12} sm={4} component={Paper} elevation={6} square className={classes.loginContainer}>
 				<div className={classes.paper}>
+				<Text>Datos de la empresa</Text>
+					<div className={classes.fieldContainer}>
+						<div className={classes.textFieldContainer}>
+							<label htmlFor="company_name">
+								<BusinessIcon className={classes.fieldIcon} />
+							</label>
+							<TextField
+								className={classes.field}
+								variant="outlined"
+								margin="normal"
+								required
+								fullWidth
+								name="Nombre de la empresa"
+								label="Nombre de la empresa"
+								id="company_name"
+								InputProps={{
+									className: classes.inputField,
+								}}
+								onChange={(e) => setNombreEmpresa(e.target.value)}
+								value={nombreEmpresa}
+							/>
+							
+						</div>
+					</div>
+					<div className={classes.fieldContainer}>
+						<div className={classes.textFieldContainer}>
+							<label htmlFor="street_address">
+								<RoomIcon className={classes.fieldIcon} />
+							</label>
+							<TextField
+								className={classes.field}
+								variant="outlined"
+								margin="normal"
+								required
+								fullWidth
+								name="Direción"
+								label="Dirección"
+								id="street_name"
+								InputProps={{
+									className: classes.inputField,
+								}}
+								onChange={(e) => setDireccionEmpresa(e.target.value)}
+								value={direccionEmpresa}
+							/>
+						</div>
+					</div>
+					<div className={classes.fieldContainer}>
+						<div className={classes.textFieldContainer}>
+							<label htmlFor="city_state">
+								<LocationCityIcon className={classes.fieldIcon} />
+							</label>
+							<TextField
+								className={classes.field}
+								variant="outlined"
+								margin="normal"
+								required
+								fullWidth
+								name="Ciudad, Estado"
+								label="Ciudad, Estado"
+								id="city_state"
+								InputProps={{
+									className: classes.inputField,
+								}}
+								onChange={(e) => setCiudadEstadoEmpresa(e.target.value)}
+								value={ciudadEstadoEmpresa}
+							/>
+							
+						</div>
+					</div>
+					<div className={classes.fieldContainer}>
+						<div className={classes.textFieldContainer}>
+							<label htmlFor="zip">
+								<MailIcon className={classes.fieldIcon} />
+							</label>
+							<TextField
+								className={classes.field}
+								variant="outlined"
+								margin="normal"
+								required
+								fullWidth
+								name="Código Postal"
+								label="Código Postal"
+								id="zip"
+								InputProps={{
+									className: classes.inputField,
+								}}
+								onChange={(e) => setCodigoPostalEmpresa(e.target.value)}
+								value={codigoPostalEmpresa}
+							/>
+							
+						</div>
+					</div>
+					<div className={classes.fieldContainer}>
+						<div className={classes.textFieldContainer}>
+							<label htmlFor="phone_number">
+								<LocalPhoneIcon className={classes.fieldIcon} />
+							</label>
+							<TextField
+								className={classes.field}
+								variant="outlined"
+								margin="normal"
+								required
+								fullWidth
+								name="Número telefónico"
+								label="Número telefónico"
+								id="phone_number"
+								InputProps={{
+									className: classes.inputField,
+								}}
+								onChange={(e) => setTelefonoEmpresa(e.target.value)}
+								value={telefonoEmpresa}
+							/>
+							
+						</div>
+					</div>
+					<div className={classes.fieldContainer}>
+						<div className={classes.textFieldContainer}>
+							<label htmlFor="name_invoicer">
+								<PersonIcon className={classes.fieldIcon} />
+							</label>
+							<TextField
+								className={classes.field}
+								variant="outlined"
+								margin="normal"
+								required
+								fullWidth
+								name="Nombre del facturador"
+								label="Nombre del facturador"
+								id="name_invoicer"
+								InputProps={{
+									className: classes.inputField,
+								}}
+								onChange={(e) => setNombreFacturador(e.target.value)}
+								value={nombreFacturador}
+							/>
+							
+						</div>
+					</div>
 					<div className={classes.fieldContainer}>
 						<div className={classes.textFieldContainer}>
 							<label htmlFor="rfc_exp">
@@ -247,6 +420,100 @@ export default function Factura() {
 								}}
 								onChange={(e) => setRFC_Exp(e.target.value)}
 								value={rfc_exp}
+							/>
+							
+						</div>
+					</div>
+				</div>
+			</Grid>
+			<Grid item xs={12} sm={4} component={Paper} elevation={4} square className={classes.loginContainer}>
+				<div className={classes.paper}>
+				<Text>Datos del cliente</Text>
+					<div className={classes.fieldContainer}>
+						<div className={classes.textFieldContainer}>
+							<label htmlFor="name_client">
+								<PersonIcon className={classes.fieldIcon} />
+							</label>
+							<TextField
+								className={classes.field}
+								variant="outlined"
+								margin="normal"
+								required
+								fullWidth
+								name="Nombre del cliente"
+								label="Nombre del cliente"
+								id="name_client"
+								InputProps={{
+									className: classes.inputField,
+								}}
+								onChange={(e) => setNombreCliente(e.target.value)}
+								value={nombreCliente}
+							/>
+						</div>
+					</div>
+					<div className={classes.fieldContainer}>
+						<div className={classes.textFieldContainer}>
+							<label htmlFor="street_address_client">
+								<RoomIcon className={classes.fieldIcon} />
+							</label>
+							<TextField
+								className={classes.field}
+								variant="outlined"
+								margin="normal"
+								required
+								fullWidth
+								name="Dirección del cliente"
+								label="Dirección del cliente"
+								id="street_address_client"
+								InputProps={{
+									className: classes.inputField,
+								}}
+								onChange={(e) => setDireccionCliente(e.target.value)}
+								value={direccionCliente}
+							/>
+						</div>
+					</div>
+					<div className={classes.fieldContainer}>
+						<div className={classes.textFieldContainer}>
+							<label htmlFor="city_state_client">
+								<LocationCityIcon className={classes.fieldIcon} />
+							</label>
+							<TextField
+								className={classes.field}
+								variant="outlined"
+								margin="normal"
+								required
+								fullWidth
+								name="Ciudad, Estado del cliente"
+								label="Ciudad, Estado del cliente"
+								id="city_state_client"
+								InputProps={{
+									className: classes.inputField,
+								}}
+								onChange={(e) => setCiudadEstadoCliente(e.target.value)}
+								value={ciudadEstadoCliente}
+							/>
+						</div>
+					</div>
+					<div className={classes.fieldContainer}>
+						<div className={classes.textFieldContainer}>
+							<label htmlFor="zip_client">
+								<Mail className={classes.fieldIcon} />
+							</label>
+							<TextField
+								className={classes.field}
+								variant="outlined"
+								margin="normal"
+								required
+								fullWidth
+								name="Código postal del cliente"
+								label="Código postal del cliente"
+								id="zip_client"
+								InputProps={{
+									className: classes.inputField,
+								}}
+								onChange={(e) => setCodigoPostalCliente(e.target.value)}
+								value={codigoPostalCliente}
 							/>
 						</div>
 					</div>
@@ -272,6 +539,24 @@ export default function Factura() {
 							/>
 						</div>
 					</div>
+					<div className={classes.fieldContainer}>
+						<div className={classes.textFieldContainer}>
+							<label htmlFor="regimen">
+								<AccountBalanceIcon className={classes.fieldIcon} />
+							</label>
+							<Select 
+								className={classes.fieldSelect}
+								options={regimen_options} 
+								placeholder="Régimen" 
+								onChange={(e) => setRegimen(e.value)}	
+							/>
+						</div>
+					</div>
+				</div>
+			</Grid>
+			<Grid item xs={12} sm={4} component={Paper} elevation={6} square className={classes.loginContainer}>
+				<div className={classes.paper}>
+				<Text>Datos del producto</Text>
 					<div className={classes.fieldContainer}>
 						<div className={classes.textFieldContainer}>
 							<label htmlFor="descripcion">
@@ -340,47 +625,7 @@ export default function Factura() {
 							/>
 						</div>
 					</div>
-							
-					<div className={classes.fieldContainer}>
-						<div className={classes.textFieldContainer}>
-							<label htmlFor="impuestos">
-								<MoneyOffIcon className={classes.fieldIcon} />
-							</label>
-							<TextField
-								className={classes.field}
-								variant="outlined"
-								margin="normal"
-								required
-								fullWidth
-								name="Impuestos"
-								label="Impuestos"
-								id="impuestos"
-								type="number"
-								InputProps={{
-									className: classes.inputField,
-								}}
-								onChange={(e) => setImpuestos(e.target.value)}
-								value={impuestos}
-							/>
-						</div>
-					</div>
-					<div className={classes.fieldContainer}>
-						<div className={classes.textFieldContainer}>
-							<label htmlFor="regimen">
-								<AccountBalanceIcon className={classes.fieldIcon} />
-							</label>
-							<Select 
-								InputProps={{
-									className: classes.inputField,
-								}}
-								className={classes.fieldSelect}
-								fullWidth
-								options={regimen_options} 
-								placeholder="Régimen" 
-								onChange={(e) => setRegimen(e.value)}						
-								/>
-						</div>
-					</div>
+					
 					<div className={classes.fieldContainer}>
 						<div className={classes.textFieldContainer}>
 							<label htmlFor="cond_pago">
@@ -407,19 +652,19 @@ export default function Factura() {
 							/>
 						</div>
 					</div>
-					<Button
-						type="submit"
-						fullWidth
-						variant="contained"
-						color="primary"
-						className={classes.submit}
-						disabled={blockSendButton}
-						onClick={manejarEnvio}
-					>
-						Registrar factura
-					</Button>
 				</div>
 			</Grid>
-		</Grid>
+				<Button
+					type="submit"
+					fullWidth
+					variant="contained"
+					color="primary"
+					className={classes.submit}
+					disabled={blockSendButton}
+					onClick={manejarEnvio}
+				>
+					Registrar factura
+				</Button>
+			</Grid>
 	);
 }
