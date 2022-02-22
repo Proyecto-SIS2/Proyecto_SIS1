@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, TextField, Paper, Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Swal from "sweetalert2";
@@ -275,7 +275,7 @@ export default function Factura({ file }) {
     setCiudadEstadoCliente(fileData[9]);
     setCodigoPostalCliente(fileData[10]);
     setRFC_Rec(fileData[11]);
-    setRegimen(Number(fileData[12]));
+    setRegimen(fileData[12]);
     setDescripcion(fileData[13]);
     setCantidad(fileData[14]);
     setValor(fileData[15]);
@@ -288,10 +288,10 @@ export default function Factura({ file }) {
     const params = {
       rfc_exp: rfc_exp,
       rfc_rec: rfc_rec,
-      regimen: regimen,
+      regimen: parseInt(regimen),
       impuestos: 16,
-      cond_pago: cond_pago,
-      metodo_pago: metodo_pago,
+      cond_pago: parseInt(cond_pago),
+      metodo_pago: parseInt(metodo_pago),
       id: idu,
       descripcion: descripcion,
       cantidad: cantidad,
@@ -307,6 +307,7 @@ export default function Factura({ file }) {
       codigoPostalCliente: codigoPostalCliente,
       nombreFacturador: nombreFacturador,
     };
+    console.log(params);
     Service.postData("facturas/register_factura", params).then((res) => {
       if (res.status === "correct") {
         setEntryState(true);
@@ -622,14 +623,15 @@ export default function Factura({ file }) {
               <label htmlFor="regimen">
                 <AccountBalanceIcon className={classes.fieldIcon} />
               </label>
-              <Select
-                className={classes.fieldSelect}
-                options={regimen_options}
-                placeholder="Régimen"
-                {...console.log(typeof regimen)}
-                defaultValue={regimen_options[Number(regimen)]}
-                onChange={(e) => setRegimen(e.value)}
-              />
+              {!regimen ? null : (
+                <Select
+                  className={classes.fieldSelect}
+                  options={regimen_options}
+                  placeholder="Régimen"
+                  defaultValue={regimen_options[regimen - 1]}
+                  onChange={(e) => setRegimen(e.value)}
+                />
+              )}
             </div>
           </div>
         </div>
@@ -719,13 +721,15 @@ export default function Factura({ file }) {
               <label htmlFor="cond_pago">
                 <BookmarksIcon className={classes.fieldIcon} />
               </label>
-              <Select
-                className={classes.fieldSelect}
-                options={cond_pago_options}
-                placeholder="Condición de pago"
-                onChange={(e) => setCond_pago(e.value)}
-                defaultValue={cond_pago}
-              />
+              {!regimen ? null : (
+                <Select
+                  className={classes.fieldSelect}
+                  options={cond_pago_options}
+                  placeholder="Condición de pago"
+                  onChange={(e) => setCond_pago(e.value)}
+                  defaultValue={cond_pago_options[cond_pago - 1]}
+                />
+              )}
             </div>
           </div>
           <div className={classes.fieldContainer}>
@@ -733,13 +737,15 @@ export default function Factura({ file }) {
               <label htmlFor="metodo_pago">
                 <PaymentsIcon className={classes.fieldIcon} />
               </label>
-              <Select
-                className={classes.fieldSelect}
-                options={metodo_pago_options}
-                placeholder="Método de pago"
-                onChange={(e) => setMetodo_pago(e.value)}
-                defaultValue={metodo_pago}
-              />
+              {!regimen ? null : (
+                <Select
+                  className={classes.fieldSelect}
+                  options={metodo_pago_options}
+                  placeholder="Método de pago"
+                  onChange={(e) => setMetodo_pago(e.value)}
+                  defaultValue={metodo_pago_options[metodo_pago - 1]}
+                />
+              )}
             </div>
           </div>
         </div>

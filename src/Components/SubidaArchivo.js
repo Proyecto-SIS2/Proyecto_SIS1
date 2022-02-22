@@ -147,18 +147,12 @@ export default function SubidaArchivo() {
   const classes = useStyles();
   return (
     <Grid container className={classes.root}>
-      {/* <Button
-        type="submit"
-        fullWidth
-        variant="contained"
-        color="primary"
+      <input
         className={classes.submit}
-        disabled={blockSendButton}
-        onClick={manejarEnvio}
-      >
-        Subir archivo CSV
-      </Button> */}
-      <input type="file" name="file" onChange={uploadFile} />
+        type="file"
+        class="form-control-file"
+        onChange={uploadFile}
+      />
       {!file ? null : <Factura file={file} />}
     </Grid>
   );
