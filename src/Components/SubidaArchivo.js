@@ -147,12 +147,7 @@ export default function SubidaArchivo() {
   const classes = useStyles();
   return (
     <Grid container className={classes.root}>
-      <input
-        className={classes.submit}
-        type="file"
-        class="form-control-file"
-        onChange={uploadFile}
-      />
+      <input className={classes.submit} type="file" onChange={uploadFile} />
       {!file ? null : <Factura file={file} />}
     </Grid>
   );
