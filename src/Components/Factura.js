@@ -623,7 +623,7 @@ export default function Factura({ file }) {
               <label htmlFor="regimen">
                 <AccountBalanceIcon className={classes.fieldIcon} />
               </label>
-              {!regimen ? null : (
+              {(!regimen && file) ? null : (
                 <Select
                   className={classes.fieldSelect}
                   options={regimen_options}
@@ -721,7 +721,7 @@ export default function Factura({ file }) {
               <label htmlFor="cond_pago">
                 <BookmarksIcon className={classes.fieldIcon} />
               </label>
-              {!regimen ? null : (
+              {(!cond_pago && file) ? null : (
                 <Select
                   className={classes.fieldSelect}
                   options={cond_pago_options}
@@ -737,7 +737,7 @@ export default function Factura({ file }) {
               <label htmlFor="metodo_pago">
                 <PaymentsIcon className={classes.fieldIcon} />
               </label>
-              {!regimen ? null : (
+              {(!metodo_pago && file) ? null : (
                 <Select
                   className={classes.fieldSelect}
                   options={metodo_pago_options}
