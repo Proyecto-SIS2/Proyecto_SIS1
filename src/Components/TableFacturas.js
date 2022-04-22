@@ -239,9 +239,9 @@ export default function TableFacturas() {
   const idu=localStorage.getItem("id");
 
   useEffect(() => {
-				Service.postData("facturas/get_facturas", {id:idu}).then((res) =>{
+				/* Service.postData("facturas/get_facturas", {id:idu}).then((res) =>{
 					setInvoices(res);
-				})
+				}) */
 	}, [idu]);
 
   const { setQuery, filteredInvoices} = useSearchInvoices(invoices);
