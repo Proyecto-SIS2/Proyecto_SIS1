@@ -19,7 +19,6 @@ import Text from "./Text";
 import SearchIcon from "@material-ui/icons/Search";
 import Service from "../Service";
 
-
 const StyledTableCell = withStyles((theme) => ({
   root: {
     border: "none",
@@ -212,23 +211,26 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function useSearchInvoices(invoices) {
-	const [query, setQuery] = useState("");
-  const [filteredInvoices, setFilteredInvoices] = useState(Object.values(invoices));
-		
-	useMemo(() => {			
-			const result = Object.values(invoices).filter((invoice) => {
-      if(query){
-        return `${invoice.nombre_empresa} ${invoice.nombre_facturador} ${invoice.nombre_cliente} ${invoice.fecha}`.toLowerCase().includes(query.toLowerCase())
-      }
-      else{
+  const [query, setQuery] = useState("");
+  const [filteredInvoices, setFilteredInvoices] = useState(
+    Object.values(invoices)
+  );
+
+  useMemo(() => {
+    const result = Object.values(invoices).filter((invoice) => {
+      if (query) {
+        return `${invoice.nombre_empresa} ${invoice.nombre_facturador} ${invoice.nombre_cliente} ${invoice.fecha}`
+          .toLowerCase()
+          .includes(query.toLowerCase());
+      } else {
         return invoice;
       }
-		});
+    });
 
     setFilteredInvoices(result);
-	}, [invoices, query]);
+  }, [invoices, query]);
 
-	return { query, setQuery, filteredInvoices};
+  return { query, setQuery, filteredInvoices };
 }
 
 export default function TableFacturas() {
@@ -236,25 +238,25 @@ export default function TableFacturas() {
 
   const [invoices, setInvoices] = React.useState([]);
 
-  const idu=localStorage.getItem("id");
+  const idu = localStorage.getItem("id");
 
   useEffect(() => {
-				/* Service.postData("facturas/get_facturas", {id:idu}).then((res) =>{
-					setInvoices(res);
-				}) */
-	}, [idu]);
+    Service.postData("facturas/get_facturas", { id: idu }).then((res) => {
+      setInvoices(res);
+    });
+  }, [idu]);
 
-  const { setQuery, filteredInvoices} = useSearchInvoices(invoices);
+  const { setQuery, filteredInvoices } = useSearchInvoices(invoices);
 
-  const assignID = (e) =>{
-    localStorage.setItem('id_factura', e);
-  }
+  const assignID = (e) => {
+    localStorage.setItem("id_factura", e);
+  };
 
   return (
     <div>
       <Title>Facturas</Title>
       <Text>Haga click en el ID para generar la factura</Text>
-      
+
       <TableContainer className={classes.tableContainer}>
         <Grid container className={classes.tableGrid}>
           <Grid
@@ -278,8 +280,8 @@ export default function TableFacturas() {
                 placeholder="Buscar por Nombre Empresa, Nombre Facturador, Nombre Cliente o Fecha"
                 inputProps={{ "aria-label": "Buscar" }}
                 onChange={(e) => {
-									setQuery(e.target.value);
-								}}
+                  setQuery(e.target.value);
+                }}
               />
             </div>
           </Grid>
@@ -289,36 +291,41 @@ export default function TableFacturas() {
             style={{
               textAlign: "end",
             }}
-          >
-          </Grid>
+          ></Grid>
         </Grid>
         <Table className={classes.table} aria-label="customized table">
           <TableHead>
-            <TableRow>  
+            <TableRow>
               <StyledTableCell align="center">ID</StyledTableCell>
               <StyledTableCell align="center">Nombre Empresa</StyledTableCell>
-              <StyledTableCell align="center">Nombre Facturador</StyledTableCell>
+              <StyledTableCell align="center">
+                Nombre Facturador
+              </StyledTableCell>
               <StyledTableCell align="center">Nombre Cliente</StyledTableCell>
               <StyledTableCell align="center">Régimen</StyledTableCell>
-              <StyledTableCell align="center">Condición de pago</StyledTableCell>
+              <StyledTableCell align="center">
+                Condición de pago
+              </StyledTableCell>
               <StyledTableCell align="center">Método de pago</StyledTableCell>
               <StyledTableCell align="center">Fecha</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-          {filteredInvoices.length !== 0 &&
-							filteredInvoices.map((row, facturaIdx) => (
+            {filteredInvoices.length !== 0 &&
+              filteredInvoices.map((row, facturaIdx) => (
                 <StyledTableRow key={facturaIdx}>
                   <StyledTableCell align="center" component="th" scope="row">
                     <Link
                       to={`/factura-generada/`}
-                      className={classes.linkAnchor}   
-                      onClick={() => { assignID(row.id_factura) }}     
-                    >                     
+                      className={classes.linkAnchor}
+                      onClick={() => {
+                        assignID(row.id_factura);
+                      }}
+                    >
                       {row.id_factura}
                     </Link>
                   </StyledTableCell>
-                  
+
                   <StyledTableCell align="center" component="th" scope="row">
                     <Typography className={classes.tableUserText} variant="h5">
                       {row.nombre_empresa}
@@ -336,13 +343,13 @@ export default function TableFacturas() {
                       {row.nombre_cliente}
                     </Typography>
                   </StyledTableCell>
-                  
+
                   <StyledTableCell align="center" component="th" scope="row">
                     <Typography className={classes.tableUserText} variant="h5">
                       {row.regimen}
                     </Typography>
                   </StyledTableCell>
-                  
+
                   <StyledTableCell align="center" component="th" scope="row">
                     <Typography className={classes.tableUserText} variant="h5">
                       {row.cond_pago}
@@ -357,20 +364,20 @@ export default function TableFacturas() {
                     <Typography className={classes.tableUserText} variant="h5">
                       {row.fecha}
                     </Typography>
-                  </StyledTableCell>   
+                  </StyledTableCell>
                 </StyledTableRow>
               ))}
           </TableBody>
         </Table>
         {filteredInvoices.length === 0 && (
-					<Typography
-						style={{ padding: "1rem", textAlign: "center" }}
-						className={classes.tableUserText}
-						variant="h5"
-					>
-						No se encontraron resultados en tu búsqueda.
-					</Typography>
-				)}
+          <Typography
+            style={{ padding: "1rem", textAlign: "center" }}
+            className={classes.tableUserText}
+            variant="h5"
+          >
+            No se encontraron resultados en tu búsqueda.
+          </Typography>
+        )}
       </TableContainer>
     </div>
   );
