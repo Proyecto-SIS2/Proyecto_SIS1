@@ -12,18 +12,22 @@ import {
   InputBase,
 } from "@material-ui/core";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
-import { Link } from "react-router-dom";
 
-import Title from "./Title";
-import Text from "./Text";
+import Title from "../Components/Title";
+import Text from "../Components/Text";
+import { Button, TextField } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import Service from "../Service";
+import Swal from "sweetalert2";
 
 const StyledTableCell = withStyles((theme) => ({
   root: {
     border: "none",
     outline: "none",
     boxSizing: "inherit",
+    maxWidth: "1200px",
+    margin: "0 auto",
+    justifyContent: "center",
   },
   head: {
     backgroundColor: "rgba(0, 0, 0, 0.4)",
@@ -51,7 +55,6 @@ const StyledTableRow = withStyles((theme) => ({
       transition: ".5s",
     },
     "&:hover": {
-      // backgroundColor: theme.palette.background.dark,
       backgroundColor: "rgba(0, 0, 0, 0.3)",
       transition: ".5s",
     },
@@ -63,8 +66,8 @@ const StyledTableRow = withStyles((theme) => ({
 }))(TableRow);
 
 const useStyles = makeStyles((theme) => ({
-  table: {
-    // border: `2px solid ${theme.palette.background.dark}`,
+  root: {
+    justifyContent: "center",
   },
   tableContainer: {
     backgroundColor: theme.palette.background.dark,
@@ -154,16 +157,6 @@ const useStyles = makeStyles((theme) => ({
   iconMore: {
     fontSize: "3rem",
   },
-  /* menuMoreDelete: {
-    backgroundColor: theme.palette.boolean.false,
-    margin: ".5rem",
-    fontSize: "1.4rem",
-    color: theme.palette.text.light,
-    textTransform: "capitalize",
-    "&:hover": {
-      backgroundColor: theme.palette.boolean.false,
-    },
-  }, */
   menuMoreUnselect: {
     backgroundColor: theme.palette.primary.main,
     margin: ".5rem",
@@ -191,10 +184,6 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "2.2rem",
     color: theme.palette.primary.main,
   },
-  /* removeBtn: {
-    fontSize: "2.2rem",
-    color: theme.palette.boolean.false,
-  }, */
   leads: {
     borderColor: theme.palette.text.dark,
   },
@@ -208,54 +197,140 @@ const useStyles = makeStyles((theme) => ({
   leadsLink: {
     textDecoration: "none",
   },
+  textProduct: {
+    backgroundColor: "red",
+  },
+  field: {
+    color: theme.palette.text.light,
+    fontSize: "1.6rem",
+    "& label": {
+      color: theme.palette.text.light,
+      fontSize: "1.6rem",
+      opacity: 0.8,
+    },
+    "& fieldset": {
+      borderColor: theme.palette.primary.main,
+    },
+    "& fieldset legend": {
+      fontSize: "1.15rem",
+    },
+    "&:hover fieldset": {
+      borderWidth: `2px`,
+    },
+    "&:hover fieldset:not(.MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline)":
+      {
+        borderColor: `${theme.palette.primary.main} !important`,
+      },
+  },
+  fieldContainer: {
+    display: "flex",
+    flexDirection: "column",
+  },
+  buttonProduct: {
+    fontSize: "15px",
+    border: "1px solid",
+    borderRadius: "5px",
+    padding: "10px",
+    margin: "10px 0",
+  },
 }));
 
-function useSearchInvoices(invoices) {
+const Toast = Swal.mixin({
+  customClass: {
+    title: "swal-title",
+  },
+  background: "#212936",
+  toast: true,
+  position: "center",
+  showConfirmButton: false,
+  timer: 2000,
+  timerProgressBar: true,
+});
+
+function useSearchProducts(products) {
   const [query, setQuery] = useState("");
-  const [filteredInvoices, setFilteredInvoices] = useState(
-    Object.values(invoices)
+  const [filteredProducts, setFilteredProducts] = useState(
+    Object.values(products)
   );
 
   useMemo(() => {
-    const result = Object.values(invoices).filter((invoice) => {
+    const result = Object.values(products).filter((product) => {
       if (query) {
-        return `${invoice.nombre_empresa} ${invoice.nombre_facturador} ${invoice.nombre_cliente} ${invoice.fecha}`
+        return `${product.descripcion}`
           .toLowerCase()
           .includes(query.toLowerCase());
       } else {
-        return invoice;
+        return product;
       }
     });
 
-    setFilteredInvoices(result);
-  }, [invoices, query]);
+    setFilteredProducts(result);
+  }, [products, query]);
 
-  return { query, setQuery, filteredInvoices };
+  return { query, setQuery, filteredProducts };
 }
 
-export default function TableFacturas() {
+const Testing = () => {
   const classes = useStyles();
-
-  const [invoices, setInvoices] = React.useState([]);
+  const [products, setProducts] = useState([]);
+  const [description, setDescription] = useState("");
+  const [quantity, setQuantity] = useState("");
+  const [price, setPrice] = useState("");
+  const [blockSendButton, setBlockSendButton] = useState(true);
+  const [entryState, setEntryState] = useState(false);
 
   const idu = localStorage.getItem("id");
 
   useEffect(() => {
-    Service.postData("facturas/get_facturas", { id: idu }).then((res) => {
-      setInvoices(res);
+    Service.postData("productos/get_productos", { id: idu }).then((res) => {
+      setProducts(res);
     });
-  }, []);
+  }, [entryState]);
 
-  const { setQuery, filteredInvoices } = useSearchInvoices(invoices);
+  useEffect(() => {
+    if (description && quantity && price) {
+      setBlockSendButton(false);
+    } else {
+      setBlockSendButton(true);
+    }
+  }, [description, quantity, price]);
 
-  const assignID = (e) => {
-    localStorage.setItem("id_factura", e);
+  const { setQuery, filteredProducts } = useSearchProducts(products);
+
+  const manejarEnvio = (e) => {
+    e.preventDefault();
+    setBlockSendButton(true);
+    const params = {
+      description: description,
+      quantity: quantity,
+      price: price,
+      id: idu,
+    };
+
+    Service.postData("productos/register_producto", params).then((res) => {
+      if (res.status === "correct") {
+        setEntryState(true);
+        setDescription("");
+        setQuantity("");
+        setPrice("");
+
+        Toast.fire({
+          icon: "success",
+          title: "Registro de factura exitoso",
+        });
+      } else {
+        setEntryState(false);
+        Toast.fire({
+          icon: "error",
+          title: "Fallo en el registro",
+        });
+      }
+    });
   };
 
   return (
-    <div>
-      <Title>Facturas</Title>
-      <Text>Haga click en el ID para generar la factura</Text>
+    <main>
+      <Title>Inventario de productos</Title>
 
       <TableContainer className={classes.tableContainer}>
         <Grid container className={classes.tableGrid}>
@@ -277,7 +352,7 @@ export default function TableFacturas() {
               <InputBase
                 fullWidth={true}
                 className={classes.input}
-                placeholder="Buscar por Nombre Empresa, Nombre Facturador, Nombre Cliente o Fecha"
+                placeholder="Buscar por descripción del producto"
                 inputProps={{ "aria-label": "Buscar" }}
                 onChange={(e) => {
                   setQuery(e.target.value);
@@ -297,79 +372,50 @@ export default function TableFacturas() {
           <TableHead>
             <TableRow>
               <StyledTableCell align="center">ID</StyledTableCell>
-              <StyledTableCell align="center">Nombre Empresa</StyledTableCell>
               <StyledTableCell align="center">
-                Nombre Facturador
+                Descripción del producto
               </StyledTableCell>
-              <StyledTableCell align="center">Nombre Cliente</StyledTableCell>
-              <StyledTableCell align="center">Régimen</StyledTableCell>
-              <StyledTableCell align="center">
-                Condición de pago
-              </StyledTableCell>
-              <StyledTableCell align="center">Método de pago</StyledTableCell>
-              <StyledTableCell align="center">Fecha</StyledTableCell>
+              <StyledTableCell align="center">Cantidad</StyledTableCell>
+              <StyledTableCell align="center">Precio</StyledTableCell>
+              <StyledTableCell align="center">Acciones</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredInvoices.length !== 0 &&
-              filteredInvoices.map((row, facturaIdx) => (
+            {filteredProducts.length !== 0 &&
+              filteredProducts.map((row, facturaIdx) => (
                 <StyledTableRow key={facturaIdx}>
                   <StyledTableCell align="center" component="th" scope="row">
-                    <Link
-                      to={`/factura-generada/`}
-                      className={classes.linkAnchor}
-                      onClick={() => {
-                        assignID(row.id_factura);
-                      }}
-                    >
-                      {row.id_factura}
-                    </Link>
-                  </StyledTableCell>
-
-                  <StyledTableCell align="center" component="th" scope="row">
                     <Typography className={classes.tableUserText} variant="h5">
-                      {row.nombre_empresa}
+                      {row.id_producto}
                     </Typography>
                   </StyledTableCell>
 
                   <StyledTableCell align="center" component="th" scope="row">
                     <Typography className={classes.tableUserText} variant="h5">
-                      {row.nombre_facturador}
+                      {row.descripcion}
                     </Typography>
                   </StyledTableCell>
 
                   <StyledTableCell align="center" component="th" scope="row">
                     <Typography className={classes.tableUserText} variant="h5">
-                      {row.nombre_cliente}
+                      {row.cantidad}
                     </Typography>
                   </StyledTableCell>
 
                   <StyledTableCell align="center" component="th" scope="row">
                     <Typography className={classes.tableUserText} variant="h5">
-                      {row.regimen}
-                    </Typography>
-                  </StyledTableCell>
-
-                  <StyledTableCell align="center" component="th" scope="row">
-                    <Typography className={classes.tableUserText} variant="h5">
-                      {row.cond_pago}
+                      {row.precio}
                     </Typography>
                   </StyledTableCell>
                   <StyledTableCell align="center" component="th" scope="row">
-                    <Typography className={classes.tableUserText} variant="h5">
-                      {row.metodo_pago}
-                    </Typography>
-                  </StyledTableCell>
-                  <StyledTableCell align="center" component="th" scope="row">
-                    <Typography className={classes.tableUserText} variant="h5">
-                      {row.fecha}
-                    </Typography>
+                    <Button>Modificar producto</Button>
+                    <Button>Eliminar producto</Button>
                   </StyledTableCell>
                 </StyledTableRow>
               ))}
           </TableBody>
         </Table>
-        {filteredInvoices.length === 0 && (
+        {filteredProducts.length === 0 && (
           <Typography
             style={{ padding: "1rem", textAlign: "center" }}
             className={classes.tableUserText}
@@ -379,6 +425,71 @@ export default function TableFacturas() {
           </Typography>
         )}
       </TableContainer>
-    </div>
+      <Text id={classes.textProduct}>Agregar producto</Text>
+      <Grid container className={classes.root}>
+        <div className={classes.fieldContainer}>
+          <div className={classes.textFieldContainer}>
+            <TextField
+              className={classes.field}
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              name="descripcion"
+              label="Descripción del producto"
+              id="descripcion"
+              InputProps={{
+                className: classes.inputField,
+              }}
+              onChange={(e) => setDescription(e.target.value)}
+              value={description}
+            />
+            <TextField
+              className={classes.field}
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              name="cantidad"
+              label="Cantidad"
+              id="cantidad"
+              InputProps={{
+                className: classes.inputField,
+              }}
+              onChange={(e) => setQuantity(e.target.value)}
+              value={quantity}
+            />
+            <TextField
+              className={classes.field}
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              name="precio"
+              label="Precio"
+              id="precio"
+              InputProps={{
+                className: classes.inputField,
+              }}
+              onChange={(e) => setPrice(e.target.value)}
+              value={price}
+            />
+          </div>
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            color="primary"
+            className={classes.buttonProduct}
+            onClick={manejarEnvio}
+            disabled={blockSendButton}
+          >
+            Registrar producto
+          </Button>
+        </div>
+      </Grid>
+    </main>
   );
-}
+};
+
+export default Testing;

@@ -106,12 +106,12 @@ export default function Header({ changePage }) {
   const idu = localStorage.getItem("id");
 
   const getUsuario = () => {
-    /* if (!boolean) {
+    if (!boolean) {
       Service.postData("user/get_user", { id: idu }).then((res) => {
         setUsuario(res);
       });
       setBoolean(true);
-    } */
+    }
   };
 
   const classes = useStyles();
@@ -198,6 +198,17 @@ export default function Header({ changePage }) {
               <Category className={classes.drawerIcon} />
               <Typography className={classes.drawerLinkText} variant="h5">
                 Inventario de productos
+              </Typography>
+            </Link>
+          </ListItem>
+          <ListItem className={classes.drawerItem}>
+            <Link
+              className={classes.drawerLink}
+              onClick={() => changePage("testing")}
+            >
+              <Category className={classes.drawerIcon} />
+              <Typography className={classes.drawerLinkText} variant="h5">
+                Testing
               </Typography>
             </Link>
           </ListItem>

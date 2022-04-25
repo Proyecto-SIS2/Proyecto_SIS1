@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { Button, TextField, Paper, Grid } from "@material-ui/core";
+import React, { useState } from "react";
+import { Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import Swal from "sweetalert2";
-import logo from "../Images/logo.png";
 import Factura from "./Factura";
 
 const useStyles = makeStyles((theme) => ({
@@ -117,20 +115,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Toast = Swal.mixin({
-  customClass: {
-    title: "swal-title",
-  },
-  background: "#212936",
-  toast: true,
-  position: "middle",
-  showConfirmButton: false,
-  timer: 1500,
-  timerProgressBar: true,
-});
-
 export default function SubidaArchivo() {
-  const [blockSendButton, setBlockSendButton] = useState(false);
   const [file, setFile] = useState();
 
   const uploadFile = (event) => {

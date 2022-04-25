@@ -133,6 +133,11 @@ const useStyles = makeStyles((theme) => ({
     marginInlineStart: "50px",
     display: "none",
   },
+  selectInput: {
+    width: "100%",
+    padding: "20px",
+    fontSize: "inherit",
+  },
 }));
 
 const Toast = Swal.mixin({
@@ -192,6 +197,9 @@ export default function Factura({ file }) {
   const [regimen, setRegimen] = useState();
   const [cond_pago, setCond_pago] = useState("");
   const [metodo_pago, setMetodo_pago] = useState("");
+
+  //Estados del producto
+  const [productos, setProductos] = useState([]);
   const [descripcion, setDescripcion] = useState("");
   const [cantidad, setCantidad] = useState("");
   const [valor, setValor] = useState("");
@@ -282,6 +290,12 @@ export default function Factura({ file }) {
     setCond_pago(fileData[16]);
     setMetodo_pago(fileData[17]);
   }, [file]);
+
+  useEffect(() => {
+    Service.postData("productos/get_productos", { id: idu }).then((res) => {
+      setProductos(res);
+    });
+  }, []);
 
   const manejarEnvio = (e) => {
     setBlockSendButton(true);
@@ -623,7 +637,7 @@ export default function Factura({ file }) {
               <label htmlFor="regimen">
                 <AccountBalanceIcon className={classes.fieldIcon} />
               </label>
-              {(!regimen && file) ? null : (
+              {!regimen && file ? null : (
                 <Select
                   className={classes.fieldSelect}
                   options={regimen_options}
@@ -652,21 +666,17 @@ export default function Factura({ file }) {
               <label htmlFor="descripcion">
                 <BookIcon className={classes.fieldIcon} />
               </label>
-              <TextField
-                className={classes.field}
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
-                name="Descripción del producto"
-                label="Descripción del producto"
-                id="descripcion"
-                InputProps={{
-                  className: classes.inputField,
-                }}
-                onChange={(e) => setDescripcion(e.target.value)}
-                value={descripcion}
+
+              <input
+                className={classes.selectInput}
+                list="productos"
+                placeholder="Descripción"
               />
+              <datalist id="productos">
+                {productos.map((producto) => (
+                  <option value={producto.descripcion}></option>
+                ))}
+              </datalist>
             </div>
           </div>
           <div className={classes.fieldContainer}>
@@ -694,7 +704,7 @@ export default function Factura({ file }) {
           </div>
           <div className={classes.fieldContainer}>
             <div className={classes.textFieldContainer}>
-              <label htmlFor="cantidad">
+              <label htmlFor="precio">
                 <AttachMoneyIcon className={classes.fieldIcon} />
               </label>
               <TextField
@@ -703,9 +713,9 @@ export default function Factura({ file }) {
                 margin="normal"
                 required
                 fullWidth
-                name="Valor unitario"
-                label="Valor unitario"
-                id="valor"
+                name="Precio"
+                label="Precio"
+                id="precio"
                 type="number"
                 InputProps={{
                   className: classes.inputField,
@@ -721,7 +731,7 @@ export default function Factura({ file }) {
               <label htmlFor="cond_pago">
                 <BookmarksIcon className={classes.fieldIcon} />
               </label>
-              {(!cond_pago && file) ? null : (
+              {!cond_pago && file ? null : (
                 <Select
                   className={classes.fieldSelect}
                   options={cond_pago_options}
@@ -737,7 +747,7 @@ export default function Factura({ file }) {
               <label htmlFor="metodo_pago">
                 <PaymentsIcon className={classes.fieldIcon} />
               </label>
-              {(!metodo_pago && file) ? null : (
+              {!metodo_pago && file ? null : (
                 <Select
                   className={classes.fieldSelect}
                   options={metodo_pago_options}
