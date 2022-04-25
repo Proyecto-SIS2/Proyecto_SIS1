@@ -226,12 +226,26 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
   },
+  inputField: {
+    color: theme.palette.text.light,
+    fontSize: "1.6rem",
+  },
   buttonProduct: {
     fontSize: "15px",
     border: "1px solid",
     borderRadius: "5px",
     padding: "10px",
     margin: "10px 0",
+  },
+  buttonActions: {
+    fontSize: "inherit",
+    margin: "0 1.5rem",
+  },
+  alertText: {
+    color: "red",
+    fontSize: "1.6rem",
+    position: "relative",
+    display: "none",
   },
 }));
 
@@ -270,7 +284,7 @@ function useSearchProducts(products) {
   return { query, setQuery, filteredProducts };
 }
 
-const Testing = () => {
+const Inventario = () => {
   const classes = useStyles();
   const [products, setProducts] = useState([]);
   const [description, setDescription] = useState("");
@@ -278,6 +292,9 @@ const Testing = () => {
   const [price, setPrice] = useState("");
   const [blockSendButton, setBlockSendButton] = useState(true);
   const [entryState, setEntryState] = useState(false);
+  const [isModified, setIsModified] = useState(false);
+  const [idProduct, setIdProduct] = useState("");
+  const [productExists, setProductExists] = useState(false);
 
   const idu = localStorage.getItem("id");
 
@@ -288,7 +305,7 @@ const Testing = () => {
   }, [entryState]);
 
   useEffect(() => {
-    if (description && quantity && price) {
+    if (description && quantity && price && !productExists) {
       setBlockSendButton(false);
     } else {
       setBlockSendButton(true);
@@ -296,6 +313,56 @@ const Testing = () => {
   }, [description, quantity, price]);
 
   const { setQuery, filteredProducts } = useSearchProducts(products);
+
+  const handleChangeDescripcion = (e) => {
+    const product = products.find(
+      (product) => product.descripcion === e.target.value
+    );
+    if (product) {
+      document.getElementById("existent-description").style.display = "initial";
+      setDescription(e.target.value);
+      setProductExists(true);
+    } else {
+      document.getElementById("existent-description").style.display = "none";
+      setDescription(e.target.value);
+      setProductExists(false);
+    }
+  };
+
+  const modificarProducto = (id) => {
+    setIdProduct(id);
+    const product = products.find((product) => product.id_producto === id);
+    setIsModified(true);
+    setDescription(product["descripcion"]);
+    setQuantity(product["cantidad"]);
+    setPrice(product["precio"]);
+  };
+
+  const eliminarProducto = (id) => {
+    Swal.fire({
+      title: "¿Eliminar producto?",
+      text: "No se podrá recuperar",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sí",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Service.postData("productos/delete_producto", { id: id }).then(
+          (res) => {
+            if (res.status === "correct") {
+              Swal.fire({
+                title: "El producto ha sido eliminado con éxito.",
+                showConfirmButton: true,
+              });
+              setEntryState(!entryState);
+            }
+          }
+        );
+      }
+    });
+  };
 
   const manejarEnvio = (e) => {
     e.preventDefault();
@@ -305,27 +372,53 @@ const Testing = () => {
       quantity: quantity,
       price: price,
       id: idu,
+      idProduct: idProduct,
     };
 
-    Service.postData("productos/register_producto", params).then((res) => {
-      if (res.status === "correct") {
-        setEntryState(true);
-        setDescription("");
-        setQuantity("");
-        setPrice("");
+    if (isModified) {
+      Service.postData("productos/update_producto", params).then((res) => {
+        if (res.status === "correct") {
+          setEntryState(true);
+          setDescription("");
+          setQuantity("");
+          setPrice("");
 
-        Toast.fire({
-          icon: "success",
-          title: "Registro de factura exitoso",
-        });
-      } else {
-        setEntryState(false);
-        Toast.fire({
-          icon: "error",
-          title: "Fallo en el registro",
-        });
-      }
-    });
+          Toast.fire({
+            icon: "success",
+            title: "Actualización de producto exitosa",
+          });
+          setIsModified(false);
+        } else {
+          setEntryState(false);
+          Toast.fire({
+            icon: "error",
+            title: "Fallo en el registro",
+          });
+          setIsModified(false);
+        }
+      });
+    } else {
+      Service.postData("productos/register_producto", params).then((res) => {
+        if (res.status === "correct") {
+          setEntryState(true);
+          setDescription("");
+          setQuantity("");
+          setPrice("");
+
+          Toast.fire({
+            icon: "success",
+            title: "Registro de producto exitoso",
+          });
+        } else {
+          setEntryState(false);
+          Toast.fire({
+            icon: "error",
+            title: "Fallo en el registro",
+          });
+        }
+      });
+    }
+    setEntryState(false);
   };
 
   return (
@@ -408,8 +501,22 @@ const Testing = () => {
                     </Typography>
                   </StyledTableCell>
                   <StyledTableCell align="center" component="th" scope="row">
-                    <Button>Modificar producto</Button>
-                    <Button>Eliminar producto</Button>
+                    <Button
+                      className={classes.buttonActions}
+                      variant="contained"
+                      color="primary"
+                      onClick={() => modificarProducto(row.id_producto)}
+                    >
+                      Modificar producto
+                    </Button>
+                    <Button
+                      className={classes.buttonActions}
+                      variant="contained"
+                      color="secondary"
+                      onClick={() => eliminarProducto(row.id_producto)}
+                    >
+                      Eliminar producto
+                    </Button>
                   </StyledTableCell>
                 </StyledTableRow>
               ))}
@@ -425,10 +532,15 @@ const Testing = () => {
           </Typography>
         )}
       </TableContainer>
-      <Text id={classes.textProduct}>Agregar producto</Text>
+      <Text id={classes.textProduct}>
+        {!isModified ? "Agregar producto" : "Actualizar producto"}
+      </Text>
       <Grid container className={classes.root}>
         <div className={classes.fieldContainer}>
           <div className={classes.textFieldContainer}>
+            <p id="existent-description" className={classes.alertText}>
+              Este producto ya se encuentra registrado.
+            </p>
             <TextField
               className={classes.field}
               variant="outlined"
@@ -438,11 +550,13 @@ const Testing = () => {
               name="descripcion"
               label="Descripción del producto"
               id="descripcion"
+              type="text"
               InputProps={{
                 className: classes.inputField,
               }}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={(e) => handleChangeDescripcion(e)}
               value={description}
+              error={productExists}
             />
             <TextField
               className={classes.field}
@@ -453,6 +567,7 @@ const Testing = () => {
               name="cantidad"
               label="Cantidad"
               id="cantidad"
+              type="number"
               InputProps={{
                 className: classes.inputField,
               }}
@@ -468,6 +583,7 @@ const Testing = () => {
               name="precio"
               label="Precio"
               id="precio"
+              type="number"
               InputProps={{
                 className: classes.inputField,
               }}
@@ -484,7 +600,7 @@ const Testing = () => {
             onClick={manejarEnvio}
             disabled={blockSendButton}
           >
-            Registrar producto
+            {!isModified ? "Registrar producto" : "Actualizar producto"}
           </Button>
         </div>
       </Grid>
@@ -492,4 +608,4 @@ const Testing = () => {
   );
 };
 
-export default Testing;
+export default Inventario;

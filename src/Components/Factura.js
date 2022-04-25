@@ -130,13 +130,15 @@ const useStyles = makeStyles((theme) => ({
     color: "red",
     fontSize: "1.6rem",
     position: "relative",
-    marginInlineStart: "50px",
     display: "none",
   },
   selectInput: {
     width: "100%",
     padding: "20px",
-    fontSize: "inherit",
+    fontSize: "1.6rem",
+    border: "1px solid",
+    borderRadius: "4px",
+    borderColor: theme.palette.primary.main,
   },
 }));
 
@@ -203,6 +205,9 @@ export default function Factura({ file }) {
   const [descripcion, setDescripcion] = useState("");
   const [cantidad, setCantidad] = useState("");
   const [valor, setValor] = useState("");
+  const [cantidadProducto, setCantidadProducto] = useState(0);
+  const [IdProducto, setIdProducto] = useState("");
+  const [quantityExceded, setQuantityExceded] = useState(false);
 
   const idu = localStorage.getItem("id");
 
@@ -228,7 +233,8 @@ export default function Factura({ file }) {
       metodo_pago &&
       descripcion &&
       cantidad &&
-      valor
+      valor &&
+      !quantityExceded
     ) {
       setBlockSendButton(false);
     }
@@ -270,6 +276,7 @@ export default function Factura({ file }) {
 
   useEffect(() => {
     if (!file) return;
+
     const fileData = file.split(",");
     setNombreEmpresa(fileData[0]);
     setDireccionEmpresa(fileData[1]);
@@ -286,16 +293,49 @@ export default function Factura({ file }) {
     setRegimen(fileData[12]);
     setDescripcion(fileData[13]);
     setCantidad(fileData[14]);
-    setValor(fileData[15]);
-    setCond_pago(fileData[16]);
-    setMetodo_pago(fileData[17]);
-  }, [file]);
+    setCond_pago(fileData[15]);
+    setMetodo_pago(fileData[16]);
+
+    const product = productos.find(
+      (product) => product.descripcion === fileData[13]
+    );
+    setValor(product?.precio);
+    setIdProducto(product?.id_producto);
+  }, [file, productos]);
 
   useEffect(() => {
     Service.postData("productos/get_productos", { id: idu }).then((res) => {
       setProductos(res);
     });
   }, []);
+
+  const handleChangeDescripcion = (e) => {
+    const product = productos.find(
+      (product) => product.descripcion === e.target.value
+    );
+
+    if (product) {
+      setDescripcion(product.descripcion);
+      setCantidadProducto(product.cantidad);
+      setValor(product.precio);
+      setIdProducto(product.id_producto);
+    } else {
+      setCantidadProducto(0);
+      setValor("");
+    }
+  };
+
+  const handleChangeQuantity = (e) => {
+    if (cantidadProducto < parseInt(e.target.value)) {
+      document.getElementById("quantity-exceded").style.display = "initial";
+      setCantidad(e.target.value);
+      setQuantityExceded(true);
+    } else {
+      document.getElementById("quantity-exceded").style.display = "none";
+      setCantidad(e.target.value);
+      setQuantityExceded(false);
+    }
+  };
 
   const manejarEnvio = (e) => {
     setBlockSendButton(true);
@@ -307,9 +347,6 @@ export default function Factura({ file }) {
       cond_pago: parseInt(cond_pago),
       metodo_pago: parseInt(metodo_pago),
       id: idu,
-      descripcion: descripcion,
-      cantidad: cantidad,
-      valor: valor,
       nombreEmpresa: nombreEmpresa,
       direccionEmpresa: direccionEmpresa,
       ciudadEstadoEmpresa: ciudadEstadoEmpresa,
@@ -320,8 +357,9 @@ export default function Factura({ file }) {
       ciudadEstadoCliente: ciudadEstadoCliente,
       codigoPostalCliente: codigoPostalCliente,
       nombreFacturador: nombreFacturador,
+      id_producto: IdProducto,
+      cantidad: cantidad,
     };
-    console.log(params);
     Service.postData("facturas/register_factura", params).then((res) => {
       if (res.status === "correct") {
         setEntryState(true);
@@ -337,12 +375,23 @@ export default function Factura({ file }) {
         });
       }
     });
+
+    const updateCantidad = {
+      id_producto: IdProducto,
+      cantidad: cantidadProducto - cantidad,
+    };
+    setCantidadProducto(cantidadProducto - cantidad);
+    Service.postData("productos/update_cantidad-producto", updateCantidad).then(
+      (res) => {
+        console.log(res);
+      }
+    );
   };
 
   const classes = useStyles();
   return (
     <Grid container className={classes.root}>
-      {entryState ? window.location.reload() : null}
+      {/*    {entryState ? window.location.reload() : null} */}
       <img src={logo} alt="Logo" className={classes.logoImg} />
       <Grid
         item
@@ -671,6 +720,8 @@ export default function Factura({ file }) {
                 className={classes.selectInput}
                 list="productos"
                 placeholder="Descripción"
+                onChange={(e) => handleChangeDescripcion(e)}
+                value={!file ? undefined : descripcion}
               />
               <datalist id="productos">
                 {productos.map((producto) => (
@@ -681,6 +732,9 @@ export default function Factura({ file }) {
           </div>
           <div className={classes.fieldContainer}>
             <div className={classes.textFieldContainer}>
+              <p id="quantity-exceded" className={classes.alertText}>
+                La cantidad ingresada excede el inventario.
+              </p>
               <label htmlFor="cantidad">
                 <LocalOfferIcon className={classes.fieldIcon} />
               </label>
@@ -691,14 +745,19 @@ export default function Factura({ file }) {
                 required
                 fullWidth
                 name="Cantidad"
-                label="Cantidad"
+                label={
+                  cantidadProducto
+                    ? `Cantidad (disponibles: ${cantidadProducto})`
+                    : "Cantidad"
+                }
                 id="cantidad"
                 type="number"
                 InputProps={{
                   className: classes.inputField,
                 }}
-                onChange={(e) => setCantidad(e.target.value)}
+                onChange={(e) => handleChangeQuantity(e)}
                 value={cantidad}
+                error={quantityExceded}
               />
             </div>
           </div>
@@ -711,8 +770,8 @@ export default function Factura({ file }) {
                 className={classes.field}
                 variant="outlined"
                 margin="normal"
-                required
                 fullWidth
+                required
                 name="Precio"
                 label="Precio"
                 id="precio"
@@ -720,6 +779,7 @@ export default function Factura({ file }) {
                 InputProps={{
                   className: classes.inputField,
                 }}
+                disabled={true}
                 onChange={(e) => setValor(e.target.value)}
                 value={valor}
               />

@@ -201,17 +201,6 @@ export default function Header({ changePage }) {
               </Typography>
             </Link>
           </ListItem>
-          <ListItem className={classes.drawerItem}>
-            <Link
-              className={classes.drawerLink}
-              onClick={() => changePage("testing")}
-            >
-              <Category className={classes.drawerIcon} />
-              <Typography className={classes.drawerLinkText} variant="h5">
-                Testing
-              </Typography>
-            </Link>
-          </ListItem>
         </List>
         <Divider className={classes.dividerList} />
         <List className={classes.drawerList}>
