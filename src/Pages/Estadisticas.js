@@ -31,24 +31,6 @@ ChartJS.register(
   Filler
 );
 
-const scores = [6, 3, 5, 1, 2, 0, 5, 4, 8, 10];
-
-const options = {
-  maintainAspectRatio: false,
-  fill: true,
-  responsive: true,
-  scales: {
-    y: {
-      min: 0,
-    },
-  },
-  plugins: {
-    legend: {
-      display: true,
-    },
-  },
-};
-
 const chart_options = [
   { value: 1, label: "Facturas generadas por tiempo" },
   {
@@ -146,6 +128,9 @@ export const Estadisticas = () => {
     "Noviembre",
     "Diciembre",
   ];
+  const [pieChartTitle, setPieChartTitle] = useState("");
+
+  const idu = localStorage.getItem("id");
 
   const handleChangeChart = (e) => {
     setChartToRender(e.value);
@@ -165,28 +150,63 @@ export const Estadisticas = () => {
 
   const handleSubmit = () => {
     setHasSubmitted(true);
-
-    if (dateOptionSelected === 1) {
-      Service.postData("facturas/get_facturas_by_date", {
-        fecha: monthSelected,
-      }).then((res) => {
-        setDataLabel(res);
-      });
-    } else if (dateOptionSelected === 2) {
-      Service.postData("facturas/get_facturas_by_year_month", {
-        fecha: yearSelected,
-      }).then((res) => {
-        setDataLabel(months);
-        setDataValue(res);
-      });
+    if (chartToRender === 1) {
+      if (dateOptionSelected === 1) {
+        Service.postData("facturas/get_facturas_by_date", {
+          fecha: monthSelected,
+        }).then((res) => {
+          setDataLabel(res);
+        });
+      } else if (dateOptionSelected === 2) {
+        Service.postData("facturas/get_facturas_by_year_month", {
+          fecha: yearSelected,
+        }).then((res) => {
+          setDataLabel(months);
+          setDataValue(res);
+        });
+      }
+    } else if (chartToRender === 2) {
+      if (dateOptionSelected === 1) {
+        const date = new Date();
+        date.setMonth(monthSelected - 1);
+        setPieChartTitle(
+          date
+            .toLocaleString("es-MX", { month: "long" })
+            .charAt(0)
+            .toUpperCase() +
+            date.toLocaleString("es-MX", { month: "long" }).slice(1)
+        );
+        const params = {
+          fecha: monthSelected,
+          id: idu,
+        };
+        Service.postData("productos/get_productos_by_date-month", params).then(
+          (res) => {
+            setDataLabel(res);
+            setDataValue(res);
+          }
+        );
+      } else if (dateOptionSelected === 2) {
+        setPieChartTitle(yearSelected);
+        const params = {
+          fecha: yearSelected,
+          id: idu,
+        };
+        Service.postData("productos/get_productos_by_date-year", params).then(
+          (res) => {
+            setDataLabel(res);
+            setDataValue(res);
+          }
+        );
+      }
     }
   };
 
-  useEffect(() => {
+  /*  useEffect(() => {
     setHasSubmitted(false);
     setValues([]);
     setLabels([]);
-  }, [yearSelected]);
+  }, [yearSelected]); */
 
   useEffect(() => {
     Service.postData("facturas/get_facturas_by_year").then((res) => {
@@ -195,40 +215,54 @@ export const Estadisticas = () => {
   }, []);
 
   useEffect(() => {
-    if (dateOptionSelected === 1) {
+    if (chartToRender === 1) {
+      if (dateOptionSelected === 1) {
+        Object.values(dataLabel).map((item) => {
+          labels.push(item);
+          setIsLoadingLabel(false);
+        });
+        const params = {
+          week_1: labels[0],
+          week_2: labels[1],
+          week_3: labels[2],
+          week_4: labels[3],
+          week_5: labels[4],
+        };
+        Service.postData("facturas/get_facturas_by_date_week", params).then(
+          (res) => {
+            setDataValue(res);
+          }
+        );
+      } else if (dateOptionSelected === 2) {
+        dataLabel.map((item) => {
+          labels.push(item);
+          setIsLoadingLabel(false);
+        });
+      }
+    } else if (chartToRender === 2) {
       Object.values(dataLabel).map((item) => {
-        labels.push(item);
-        setIsLoadingLabel(false);
-      });
-      const params = {
-        week_1: labels[0],
-        week_2: labels[1],
-        week_3: labels[2],
-        week_4: labels[3],
-        week_5: labels[4],
-      };
-      Service.postData("facturas/get_facturas_by_date_week", params).then(
-        (res) => {
-          setDataValue(res);
-        }
-      );
-    } else if (dateOptionSelected === 2) {
-      dataLabel.map((item) => {
-        labels.push(item);
+        labels.push(item.descripcion);
         setIsLoadingLabel(false);
       });
     }
   }, [dataLabel]);
 
   useEffect(() => {
-    if (dateOptionSelected === 1) {
+    if (chartToRender === 1) {
+      if (dateOptionSelected === 1) {
+        Object.values(dataValue).map((item) => {
+          values.push(item[0].total);
+          setIsLoadingValue(false);
+        });
+      } else if (dateOptionSelected === 2) {
+        dataValue.map((item) => {
+          values.push(item[0].total);
+          setIsLoadingValue(false);
+        });
+      }
+    } else if (chartToRender === 2) {
       Object.values(dataValue).map((item) => {
-        values.push(item[0].total);
-        setIsLoadingValue(false);
-      });
-    } else if (dateOptionSelected === 2) {
-      dataValue.map((item) => {
-        values.push(item[0].total);
+        values.push(item.total);
         setIsLoadingValue(false);
       });
     }
@@ -238,17 +272,42 @@ export const Estadisticas = () => {
     return {
       datasets: [
         {
+          legend: {
+            display: false,
+          },
           label: `Resultado`,
           data: values,
-          borderColor: "#1AC9E6",
+          borderColor: ["#1AC9E6"],
           pointRadius: 6,
-          pointBackgroundColor: "#1AC9E6",
-          backgroundColor: "#1AC9E633",
+          pointBackgroundColor: ["#1AC9E6", "#fff"],
+          backgroundColor: [
+            "#1AC9E633",
+            "#1ae63733",
+            "#e6371a33",
+            "#e69d1a33",
+            "#1a63e633",
+          ],
         },
       ],
       labels,
     };
   }, [dataLabel]);
+
+  const options = {
+    maintainAspectRatio: false,
+    fill: true,
+    responsive: true,
+    scales: {
+      y: {
+        min: 0,
+      },
+    },
+    plugins: {
+      legend: {
+        display: true,
+      },
+    },
+  };
 
   return (
     <>
@@ -315,9 +374,16 @@ export const Estadisticas = () => {
                 <Line data={data} options={options} />
               </>
             ) : chartToRender === 1 && dateOptionSelected === 2 ? (
-              <Bar data={data} options={options} />
-            ) : chartToRender === 3 ? (
-              <Pie data={data} options={options} />
+              <>
+                <Bar data={data} options={options} />
+              </>
+            ) : chartToRender === 2 ? (
+              <>
+                <div className={classes.mainContainer}>
+                  <h2>{pieChartTitle}</h2>
+                </div>
+                <Pie data={data} options={options} />
+              </>
             ) : null)}
         </>
       )}

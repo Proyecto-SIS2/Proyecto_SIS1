@@ -9,6 +9,7 @@ import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
 import ListItem from "@material-ui/core/ListItem";
 import PostAddIcon from "@material-ui/icons/PostAdd";
+import AssessmentIcon from "@material-ui/icons/Assessment";
 import TimelineIcon from "@material-ui/icons/Timeline";
 import SettingsIcon from "@material-ui/icons/Settings";
 import Category from "@material-ui/icons/Category";
@@ -206,7 +207,7 @@ export default function Header({ changePage }) {
               className={classes.drawerLink}
               onClick={() => changePage("estadisticas")}
             >
-              <PostAddIcon className={classes.drawerIcon} />
+              <AssessmentIcon className={classes.drawerIcon} />
               <Typography className={classes.drawerLinkText} variant="h5">
                 Estadísticas
               </Typography>
