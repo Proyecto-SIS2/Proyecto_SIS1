@@ -8,6 +8,7 @@ import Factura from "./Components/Factura";
 import Historial from "./Pages/Historial";
 import FacturaID from "./Pages/FacturaID";
 import Inventario from "./Pages/Inventario";
+import { Estadisticas } from "./Pages/Estadisticas";
 
 export default function App() {
   const [page, setPage] = useState("dashboard");
@@ -44,6 +45,11 @@ export default function App() {
           exact
           path="/inventario/"
           render={() => <Inventario page={page} changePage={handlePage} />}
+        />
+        <Route
+          exact
+          path="/estadisticas/"
+          render={() => <Estadisticas page={page} changePage={handlePage} />}
         />
       </Switch>
     </BrowserRouter>

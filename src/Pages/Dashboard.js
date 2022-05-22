@@ -7,6 +7,7 @@ import Ajustes from "../Components/Ajustes";
 import SubidaArchivo from "../Components/SubidaArchivo";
 import DashboardContent from "./DashboardContent";
 import Inventario from "./Inventario";
+import { Estadisticas } from "../Pages/Estadisticas";
 
 const useStyles = makeStyles((theme) => ({
   dashBoard: {
@@ -30,6 +31,7 @@ export default function Dashboard({ page, changePage }) {
         {page === "historial" && <Historial />}
         {page === "csv" && <SubidaArchivo />}
         {page === "inventario" && <Inventario />}
+        {page === "estadisticas" && <Estadisticas />}
       </div>
     </Fragment>
   );
